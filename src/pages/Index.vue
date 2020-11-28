@@ -105,12 +105,14 @@ export default {
     $content-width: 120px;
     .wrapper {
         overflow:hidden;
-        position: relative;
+         //  ========11.29=======   修改为固定定位
+        position: fixed;
         width: 100%;
         height: 100%;
     }
     .title {
-        margin-top: 80px;
+      // 11.29  修改题目的顶部距离
+        margin-top: 60px;
         height: 100%;
         text-align: center;
         font-size: 72px;

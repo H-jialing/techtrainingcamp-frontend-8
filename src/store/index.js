@@ -11,7 +11,6 @@ export default new Vuex.Store({
   state: {
     nickName: localStorage.nickName,
     roomId: localStorage.roomId,
-    single: false
   },
 
   mutations: {

@@ -8,7 +8,7 @@
                 </li>
             </ul>
         </div>
-
+        <!-- 11.28 开始游戏，已具备重新游戏的功能 -->
         <button class="start" @click="startGame">开始游戏</button>
         <button class="back" @click="() => this.$router.replace('/')">返回菜单</button>
         
@@ -16,7 +16,7 @@
             <div class="classic">
                 <div class="classic-wrap score">
                     <p>分数</p>
-                    <p>{{score}}</p>
+                    <p v-if="inited">{{this.$refs.gameboard.myScore}}</p>
                 </div>
                 <div class="classic-wrap best-score">
                     <p>历史最高</p>
@@ -27,19 +27,20 @@
             <div class="timer-wrap">
                 <div v-if="modeItem[1].isModeActive" class="limit-clock">
                     <p>限时时间</p>
-                    <p>{{limitTime}}</p>
+                    <p>{{this.$refs.gameboard.time}}</p>
                 </div>
                 <div v-if="modeItem[2].isModeActive" class="clock">
                     <p>计时时间</p>
-                    <p>{{clockTime}}</p>
+                    <p>{{this.$refs.gameboard.count}}</p>
                 </div>
             </div>
         </div>
-        
-        <GameBoard @newScore="score=$event" @limitTimeChange="limitTime=$event" class="game" ref="gameboard" />
-
+        <!-- 11.28 删除一些监听事件 -->
+        <GameBoard :type="type" class="game" @gameOver="gameOver" ref="gameboard" />
+        <!-- 11.28 未做：在gameover和succes函数中控制游戏结果显示变量 
+        -->
         <div v-if="scoreShow" class="result-wrap">
-            我的分数：{{score}} 
+            我的分数：{{this.$refs.gameboard.myScore}} 
             <div>
                 <button @click="() => scoreShow = false">返回</button>
             </div>
@@ -57,33 +58,48 @@ export default {
         return {
             modeItem: [
                 {
+                  // 11.28 默认经典模式
                     mode: '经典模式',
-                    isModeActive: false
+                    isModeActive: true
                 }, 
                 {
                     mode: '限时模式',
                     isModeActive: false
                 }, 
                 {
-                    mode: '计时模式',
+                  // 11.28 
+                    mode: '速度模式',
                     isModeActive: false
                 }
             ],
-            score: 0,
+            // 11.28 用不到的变量
+            // score: 0,
             bestScore: 0,
-            limitTime: 0,
-            clockTime: 0,
+            // limitTime: 0,
+            // clockTime: 0,
             isGameover: true,
-            scoreShow: true
+            // 11.28 不能在一开始就展示分数，否则 this.$ref 取不到
+            scoreShow: false,
+            // 11.28 新增变量
+            type: 0,
+            inited: false
         }
     },
     mounted() {
-        this.score = this.$route.params.myScore
+      // 11.28 这里 params是空对象
+        // this.score = this.$route.params.myScore
+        console.log(this.$refs)
+        this.inited = true
+        // this.score = this.$refs.gameboard.myScore
+        // this.limitTime = this.$refs.gameboard.time
+        // this.clockTime = this.$refs.gameboard.count
     },
     methods: {
         modeClick (index) {
             this.modeItem.forEach((item, indx) => {
                 if (index === indx) {
+                    this.type = index
+                    console.log(this.type)
                     item.isModeActive = true
                 } else {
                     item.isModeActive = false
@@ -92,12 +108,17 @@ export default {
         },
         startGame () {
             this.$refs.gameboard.init()
+        }, 
+        gameOver () {
+          // 11.28 加上游戏结束动画／弹窗
+          this.scoreShow = true
         }
     }
 }
 </script>
 
 <style lang="scss" scoped>
+
 %default-button {
     // width: 100%;
     // height: 45px;
@@ -179,8 +200,10 @@ $button-background: #8C7B69;
             font-weight: bolder;
         }
     }
+    // 11.28 更改按钮样式
     .active {
-        color: red;
+        font-weight: 700;
+        color: #F67D60;
     }
 }
 .limit-clock,

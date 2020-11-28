@@ -1,8 +1,8 @@
 <template>
     <div>
         <div>房间号: {{roomId}}</div>
-
-        <button class="start" @click="startGame">开始游戏</button>
+        <!-- 11.28 对战模式，隐去开始游戏按钮 -->
+        <button class="start" @click="startGame" v-if="!isStart">开始游戏</button>
         <button class="back" @click="() => this.$router.replace('/')">退出房间</button>
         
         <div class="mode-wrap">
@@ -18,7 +18,7 @@
             <div class="classic">
                 <div class="classic-wrap my-score">
                     <p>我的分数</p>
-                    <p>{{myScore}}</p>
+                    <p v-if="inited">{{this.$refs.gameboard.myScore}}</p>
                 </div>
                 <div class="classic-wrap your-score">
                     <p>对方分数</p>
@@ -33,7 +33,7 @@
                 </div>
                 <div v-else class="limit-clock">
                     <p>剩余时间</p>
-                    <p>{{limitTime}}</p>
+                    <p>{{this.$refs.gameboard.time}}</p>
                 </div>
             </div>
         </div>
@@ -54,13 +54,14 @@
         </div>
 
         <!-- <div>等待对手。。。</div> -->
-
-        <GameBoard @newScore="score=$event" @limitTimeChange="limitTime=$event" class="game" ref="gameboard" />
+        <!-- 11.28 删除监听事件 -->
+        <GameBoard :level='mode' :type='1' :setTime='limitTime' @gameOver="gameOver" class="game" ref="gameboard" />
 
         <!-- <Room /> -->
-
+        <!-- 11.28 未做：在gameover和succes函数中控制游戏结果显示变量 
+        -->
         <div class="result-wrap" v-if="scoreShow">
-            我的分数：{{myScore}} VS 对手的分数：{{yourScore}}
+            我的分数：{{this.$refs.gameboard.myScore}} VS 对手的分数：{{yourScore}}
             <div>
                 <button @click="() => scoreShow = false">返回</button>
             </div>
@@ -88,23 +89,29 @@ export default {
             modeItem: [
                 {
                     mode: '简单模式',
-                    isModeActive: true
+                    isModeActive: false
                 }, 
                 {
-                    mode: '中等模式',
-                    isModeActive: false
+                  // 11.28
+                    mode: '正常模式',
+                    isModeActive: true
                 }, 
                 {
                     mode: '困难模式',
                     isModeActive: false
                 }
             ],
-            scoreShow: true
+            // 11.28 不能在一开始就展示分数，否则 this.$ref 取不到
+            scoreShow: false,
+            // 11.28 模式选择
+            mode: 1,
+            inited: false
         }
     },
     mounted() {
-        this.myScore = this.$route.params.myScore
-        this.yourScore = this.$route.params.mateScore
+        // this.myScore = this.$route.params.myScore
+        // this.yourScore = this.$route.params.mateScore
+        this.inited = true
     },
     methods: {
         startGame () {
@@ -114,12 +121,17 @@ export default {
         modeClick (index) {
             this.modeItem.forEach((item, indx) => {
                 if (index === indx) {
+                    this.mode = index
                     item.isModeActive = true
                 } else {
                     item.isModeActive = false
                 }
             })
         },
+        gameOver () {
+          // 11.28 加上游戏结束动画／弹窗
+          this.scoreShow = true
+        }
     }
 }
 </script>

@@ -1,8 +1,13 @@
 # my2048
 
-> A Vue.js project
+> 采用vue + express(vue内置) + socket.io
 
-## Build Setup
+前端：localhost:8080
+
+后端：localhost:8081
+
+
+## 使用方法
 
 ``` bash
 # install dependencies
@@ -10,12 +15,6 @@ npm install
 
 # serve with hot reload at localhost:8080
 npm run dev
+（同时启动服务器）
 
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
 ```
-
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
