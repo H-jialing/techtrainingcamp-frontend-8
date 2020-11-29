@@ -162,7 +162,9 @@ export default {
             // 11.28 模式选择
             mode: 1,
             inited: false,
-            isReady: true
+            isReady: true,
+            inputText: '',
+            receiveText: ''
         }
     },
     mounted() {
