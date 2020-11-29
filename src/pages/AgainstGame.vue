@@ -139,8 +139,8 @@ export default {
             limitTime: 10,
             isStart: false, //点击开始游戏，载入游戏前变为true
             isReady: false, //房内有两人后变为true
-            emojis: ['😂', '🙏', '😄', '😏', '😇', '😅', '😌', '😘', '😍', '🤓', '😜', '😎', '😊', '😳', '🙄', '😱', '😒', '😔', '😷', '👿', '🤗', '😩', '😤', '😣', '😰', '😴', '😬', '😭', '👻', '👍', '✌️', '👉', '👀', '🐶', '🐷', '😹', '⚡️', '🔥', '🌈', '🍏', '⚽️', '❤️', '🇨🇳'],
-            isShowEmoji: false,
+            emojis: ['😄', '😏', '😅', '😎', '👿', '😤', '😭', '👻', '👍', '✌️', '❤️'],
+            isShowEmoji: true,
             oTextarea: {},
             modeItem: [
                 {
@@ -162,17 +162,13 @@ export default {
             // 11.28 模式选择
             mode: 1,
             inited: false,
-            isReady: true,
-            inputText: '',
-            receiveText: ''
+            isReady: true
         }
     },
     mounted() {
         // this.myScore = this.$route.params.myScore
         // this.yourScore = this.$route.params.mateScore
         this.inited = true
-
-        this.isShowEmoji = false
         this.oTextarea = document.querySelector('input');
 
         //发送信号加入房间
@@ -313,36 +309,7 @@ export default {
             alert(this.isShowEmoji)           
         },
         insertText(str) {
-            str = str + ` `;
-            const oTextarea = this.$refs.inputBox;
-
-            if (document.selection) {
-                let sel = document.selection.createRange();
-                sel.text = str;
-            } else if (typeof oTextarea.selectionStart === 'number' && typeof oTextarea.selectionEnd ==='number') {
-                let startPos = oTextarea.selectionStart;
-                let endPos = oTextarea.selectionEnd;
-                let cursorPos = startPos;
-                let tempVal = oTextarea.value;
-                this.inputContent = tempVal.substring(0, startPos) + str + tempVal.substring(startPos, tempVal.length)
-                cursorPos += str.length;
-                oTextarea.selectionStart = oTextarea.selectionEnd = cursorPos;
-
-            } else {
-                oTextarea.value += str;
-            }
-            this.newLine();
-        },
-        newLine() {
-            setTimeout(() => this.oTextarea.scrollTop = this.oTextarea.scrollHeight, 0);
-        },
-        //发送给对方消息
-        sendMsg() {
-            socket.emit("send",
-                {"roomId": this.roomId, "msg": this.inputText},
-                (res) => {
-                    this.inputText = ''
-                })
+            this.$refs.inputBox.value = this.$refs.inputBox.value + str
         },
     }
 }
@@ -368,6 +335,7 @@ export default {
 }
 .playerTop{
     width: 100%;
+    height: 100px;
 }
 .playerDown{
     position: absolute;
@@ -506,7 +474,8 @@ export default {
 .messageOpponent{
     width: 75%;
     height: 100%;
-    margin-left: 150px; 
+    margin-top: 40px;
+    margin-left: 130px; 
 }
 .commentOpp {
     position: relative;
@@ -566,6 +535,7 @@ export default {
     outline:none;
     color:#F9F6F3;
     margin-top: 7%;
+    margin-left: 2%;
     width: 50%;
     font-size: 16px;
 }
@@ -584,17 +554,18 @@ export default {
 .emoji-display {
     position: absolute;
     width: 100%;
-    height: 210px;
+    height: 30px;
     background-color: white;
-    top: -210px;
+    top: -30px;
     left: 0;
       overflow-y: auto;
     ul {
         display: flex;
         flex-wrap: wrap;
+        list-style: none;
         li {
             padding: 2px 3px;
-            font-size: 2.2rem;
+            font-size: 1.2rem;
           }
         }
       }
