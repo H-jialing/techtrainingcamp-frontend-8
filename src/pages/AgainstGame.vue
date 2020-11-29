@@ -193,7 +193,9 @@ export default {
         socket.on("start", data => {
             alert("Game Start!")
             this.isStart = true
-            this.$refs.gameboard.init()
+            this.$nextTick(() => {
+                this.$refs.gameboard.init()
+            })
         }),
 
         //接受服务器发送的对手分数的更新

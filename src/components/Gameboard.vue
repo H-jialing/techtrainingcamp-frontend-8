@@ -49,6 +49,7 @@ export default {
       // 速度模式
       count: 5,
       timeOut: null,
+      isStart: false
     }
   },
   // 钩子函数
@@ -60,7 +61,7 @@ export default {
     // 限时模式
     type: {
       handler(type) {
-        if (type == 1) {
+        if (type == 1 && this.isStart) {
           this.timer = setInterval(() => {
             this.time = this.time - 1
           }, 1000)
@@ -81,7 +82,7 @@ export default {
     },
     time: {
       handler(time) {
-        if(time <= 0) {
+        if(time <= 0 && this.isStart) {
           this.$emit('gameOver')
           document.removeEventListener('keydown', this.keydown)
           clearInterval(this.timer)
@@ -118,6 +119,7 @@ export default {
       this.move(event)
     },
     init () {
+      this.isStart = true
       // 所有归零
       
       document.addEventListener("keydown", this.keydown)
@@ -144,7 +146,7 @@ export default {
         this.numberRef.children[x2 * 4 + y2].innerHTML = this.point[x2][y2]
         this.numberRef.children[x2 * 4 + y2].setAttribute('class', 'cell number-cell' + this.point[x2][y2])
         // ------ 开始计时
-        if(this.type == 1) {
+        if(this.type == 1 && this.isStart) {
           this.timer = setInterval(() => {
             this.time = this.time - 1
           }, 1000)
