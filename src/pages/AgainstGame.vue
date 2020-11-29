@@ -162,7 +162,9 @@ export default {
             // 11.28 模式选择
             mode: 1,
             inited: false,
-            isReady: true
+            isReady: true,
+            inputText: '',
+            receiveText: ''
         }
     },
     mounted() {
@@ -245,6 +247,11 @@ export default {
             })
         }),
 
+        //接收服务器发来的对手的消息
+        socket.on("partnerMsg", data => {
+            this.receiveText = data.msg
+        }),
+
         //接受服务器发送的对手分数的更新
         socket.on("updatescore", data =>{
             console.log("对手的新得分:",data.updatescore);
@@ -261,6 +268,11 @@ export default {
             handler(limitTime){
                 socket.emit("changeTime",{"roomId": this.roomId,"limitTime": this.limitTime} )
             }
+        }
+    },
+    computed: {
+        clickable() {
+            return this.inputText.length > 0
         }
     },
     methods: {
@@ -323,7 +335,15 @@ export default {
         },
         newLine() {
             setTimeout(() => this.oTextarea.scrollTop = this.oTextarea.scrollHeight, 0);
-        }
+        },
+        //发送给对方消息
+        sendMsg() {
+            socket.emit("send",
+                {"roomId": this.roomId, "msg": this.inputText},
+                (res) => {
+                    this.inputText = ''
+                })
+        },
     }
 }
 </script>

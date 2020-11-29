@@ -120,6 +120,13 @@ io.on('connection', socket => {
       socket.to(data.roomId).emit("updatescore",{"updatescore":data.score})
   });
 
+    //接收来自A的消息并传给B
+    socket.on("send", (data,fn) => {
+      socket.to(data.roomId).emit("partnerMsg",{"msg": data.msg})
+      fn("已发送")
+      console.log("成功传递一条消息..")
+  });
+
     //接受A完成了大的消块并返回给B接受对应惩罚
   socket.on("scorechange", data => {
       if(data.score == 64) {
