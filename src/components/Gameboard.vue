@@ -41,7 +41,7 @@ export default {
       myScore: 0,
       scoreChange: 0,
       // 计时变量，设置计时时间
-      time: 900,
+      time: 20,
       // 保存定时器
       timer: null,
       reg: new RegExp(' trans-scale'),
@@ -65,6 +65,11 @@ export default {
             this.time = this.time - 1
           }, 1000)
         }
+      }
+    },
+    myScore: {
+      handler(myScore) {
+        this.$emit("newScore",myScore)
       }
     },
     scoreChange: {
@@ -199,8 +204,6 @@ export default {
               if (this.point[i][j] !== 0 && this.point[i][k] === 0 && noBlockHorizontal(this.point, i, k, j)) {
                 // move
                 // ====== 添加从[i,j]移动到[i,k]的动画
-
-                
                 // 将[i，j]的值赋给[i,k]
                 this.point[i][k] = this.point[i][j]
                 // [i,j]的值归零

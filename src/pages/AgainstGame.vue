@@ -1,9 +1,10 @@
 <template>
     <div>
         <div>房间号: {{roomId}}</div>
+
         <!-- 11.28 对战模式，隐去开始游戏按钮 -->
-        <button class="start" @click="startGame" v-if="!isStart">开始游戏</button>
-        <button class="back" @click="() => this.$router.replace('/')">退出房间</button>
+        <button class="start" @click="startGame" :disabled="!isReady" v-if="character === 1 && inited == true">开始游戏</button>
+        <button class="back" @click="leaveRoom">退出房间</button>
         
         <div class="mode-wrap">
             <div>难度设置</div>
@@ -22,14 +23,17 @@
                 </div>
                 <div class="classic-wrap your-score">
                     <p>对方分数</p>
-                    <p>{{yourScore}}</p>
+                    <p v-if="inited">{{yourScore}}</p>
                 </div>
             </div>
 
             <div class="timer-wrap">
                 <div v-if="!isStart" class="limit-clock">
                     <p>设置时间</p>
-                    <input v-model="limitTime" type="text">
+                    <div>
+                        <input v-if="character ===1 " v-model="limitTime" type="text">
+                        <div v-else> {{limitTime}} </div>
+                    </div>
                 </div>
                 <div v-else class="limit-clock">
                     <p>剩余时间</p>
@@ -40,22 +44,25 @@
 
         <div class="player1">
             <div class="picture">
-                <div class="character">{{character === 1 ? '房客' : '房主'}}</div>
+                <div class="character">{{character === 1 ? '房主' : '房客'}}</div>
             </div>
-            <div class="nickname">{{myName}}</div>
+            <div class="nickname">我：{{myName}}</div>
         </div>
 
         <div class="player2">
             <div class="picture">
-                <div class="character">{{character === 1 ? '房主' : '房客'}}</div>
+                <div class="character">{{character === 1 ? '房客' : '房主'}}</div>
             </div>
-            <div class="nickname">{{myName}}</div>
+            <div class="nickname">对手：{{yourName ? yourName : ''}}</div>
             
         </div>
 
         <!-- <div>等待对手。。。</div> -->
         <!-- 11.28 删除监听事件 -->
-        <GameBoard :level='mode' :type='1' :setTime='limitTime' @gameOver="gameOver" class="game" ref="gameboard" />
+        <GameBoard :level='mode' :type='1' 
+        :setTime='limitTime' @gameOver="gameOver" 
+        @newScore='sendScore'
+        class="game" ref="gameboard" />
 
         <!-- <Room /> -->
         <!-- 11.28 未做：在gameover和succes函数中控制游戏结果显示变量 
@@ -72,6 +79,10 @@
 <script>
 import GameBoard from '../components/Gameboard'
 import Room from '../components/Room'
+import io from 'socket.io-client'
+// 建立socket.io通信
+const socket = io.connect('http://127.0.0.1:8081')
+
 export default {
     components: {
         GameBoard,
@@ -80,12 +91,14 @@ export default {
     data () {
         return {
             roomId: 1,
-            myName: 'nickname',
-            character: 1,
+            myName: '我',
+            yourName: '',
+            character: null,   //1为房主，0为房客
             myScore: 0,
             yourScore: 0,
             limitTime: 10,
-            isStart: false,
+            isStart: false, //点击开始游戏，载入游戏前变为true
+            isReady: false, //房内有两人后变为true
             modeItem: [
                 {
                     mode: '简单模式',
@@ -112,11 +125,103 @@ export default {
         // this.myScore = this.$route.params.myScore
         // this.yourScore = this.$route.params.mateScore
         this.inited = true
+
+        //发送信号加入房间
+        socket.emit('joinRoom',
+            { "playerName": this.myName, "roomId": this.roomId},
+            (res) => {  //根据回调的power进入不同组件(房主/房客)
+                res.permission === 1 
+                ? this.character = 1
+                : this.character = 0
+            }
+        ),
+
+        //房间已满，无法加入
+        socket.on("full", data => {
+            this.$router.push({
+                path: "/"   
+            })
+            alert(data.roomId + "房间已满，无法加入！")
+        }),
+
+        //房间内有两个人时，获取两个人的消息
+        socket.on("findmate", data => {
+            console.log("match！");
+            this.isReady = true
+            if(this.character == 1){    //如果我是房主
+                this.yourName = data.unholder
+            }
+            else {                  //如果我是房客
+                this.yourName = data.holder
+            }
+            //将房主的当前设定时间传给房客
+            if(this.character == 1){
+                socket.emit("changeTime",{"roomId": this.roomId,"limitTime": this.limitTime} )
+            }
+        }),
+
+        //接收服务端离开房间的信号，执行离开房间
+        socket.on("quit", data => {
+            if(data.power == 1){    //房主解散了房间
+                this.$router.push({
+                    path: "/"
+                })
+                alert("房主已解散该房间！")
+            }
+            else{   //房客退出了房间
+                this.$router.push({
+                    path: "/"
+                })
+                alert("退出了该房间！")
+            }
+        }),
+
+        //房主接收房客离开房间的消息
+        socket.on("memberleave", data => {
+            if(this.character == 1){
+                alert("你的对手离开了游戏")
+                this.yourName = ''
+            }
+        }),
+        //房客同步房主设定时间
+        socket.on("changeT", data => {
+            //alert("房主更改了时间")
+            this.limitTime = data.newTime
+        })
+
+        //所有客户端都监听服务器发送的“开始游戏”信号
+        socket.on("start", data => {
+            alert("Game Start!")
+            this.isStart = true
+            this.$refs.gameboard.init()
+        }),
+
+        //接受服务器发送的对手分数的更新
+        socket.on("updatescore", data =>{
+            console.log("对手的新得分:",data.updatescore);
+            this.yourScore = data.updatescore
+        })
+    },
+    created() {
+        //从vuex中拿到用户昵称和房间id
+        this.myName = this.$store.state.nickName   
+        this.roomId = this.$store.state.roomId  
+    },
+    watch: {
+        limitTime: {
+            handler(limitTime){
+                socket.emit("changeTime",{"roomId": this.roomId,"limitTime": this.limitTime} )
+            }
+        }
     },
     methods: {
         startGame () {
-            this.$refs.gameboard.init()
             this.isStart = true
+            socket.emit("startGame",{"roomId": this.roomId})
+        },
+        //向服务器发送离开房间的请求
+        leaveRoom() {
+            socket.emit("leaveRoom",{"roomId": this.roomId, "playerName": this.myName, "power": this.character})
         },
         modeClick (index) {
             this.modeItem.forEach((item, indx) => {
@@ -128,9 +233,15 @@ export default {
                 }
             })
         },
+        //发送给对方自己的分数变化
+        sendScore(myScore) {
+            socket.emit("newscore",{"roomId": this.roomId, "score": myScore})
+        },
         gameOver () {
-          // 11.28 加上游戏结束动画／弹窗
-          this.scoreShow = true
+            // 11.28 加上游戏结束动画／弹窗
+            this.scoreShow = true
+            this.isStart = 0
+            //socket.emit("gameover", {"roomId": this.roomId, "playerName": this.myName, "power": this.character})
         }
     }
 }
