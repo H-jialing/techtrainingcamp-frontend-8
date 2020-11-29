@@ -38,19 +38,21 @@
             </div>
         </div>
 
-        <div class="player1">
-            <div class="picture">
-                <div class="character">{{character === 1 ? '房客' : '房主'}}</div>
+        <div class="playerTop">
+            <div class="player1">
+                <div class="picture">
+                    <div class="character">{{character === 1 ? '房客' : '房主'}}</div>
+                    <div class="avatarOpponent">
+                        <img src="../assets/img/boy.png" class="avatar">
+                    </div>
+                </div>
+                <div class="nickname">{{myName}}</div>
             </div>
-            <div class="nickname">{{myName}}</div>
-        </div>
-
-        <div class="player2">
-            <div class="picture">
-                <div class="character">{{character === 1 ? '房主' : '房客'}}</div>
+            <div class="messageOpponent">
+                <div class="commentOpp">
+                      <input ref="inputBox" v-model="receiveText" autofocus class="inputOpp" readonly="true">
+                </div>
             </div>
-            <div class="nickname">{{myName}}</div>
-            
         </div>
 
         <!-- <div>等待对手。。。</div> -->
@@ -60,6 +62,44 @@
         <!-- <Room /> -->
         <!-- 11.28 未做：在gameover和succes函数中控制游戏结果显示变量 
         -->
+
+        <div class="playerDown">
+            <div class="player2">
+                <div class="picture">
+                    <div class="character">{{character === 1 ? '房主' : '房客'}}</div>
+                    <div class="avatarMy">
+                        <img src="../assets/img/girl.png" class="avatar">
+                    </div>
+                </div>
+                <div class="nickname">{{myName}}</div>
+            </div>
+            <div class="messageMy">
+                <div class="commentMy">
+                    <transition name="slide-bottom">
+                        <div v-show="isShowEmoji" class="emoji-display">
+                            <ul>
+                                <li @click="insertText(item)" v-for="item of emojis">{{item}}</li>
+                            </ul>
+                        </div>
+                    </transition>
+                    <div class="emoji">
+                        <i @click="showEmoji(isShowEmoji=!isShowEmoji);" class="icon-emoji"></i>
+                    </div>
+                        <input ref="inputBox"
+                        v-model="inputText"
+                        @keyup.enter="sendMsg"
+                        placeholder="请输入聊天内容"
+                        autofocus
+                        class="inputMy">
+                        <button
+                        :class="{'clickable': clickable}"
+                        @click="sendMsg" class="buttonInput"
+                        >发送</button>
+                    </div>
+                </div>
+        </div>
+
+        
         <div class="result-wrap" v-if="scoreShow">
             我的分数：{{this.$refs.gameboard.myScore}} VS 对手的分数：{{yourScore}}
             <div>
@@ -85,6 +125,9 @@ export default {
             myScore: 0,
             yourScore: 0,
             limitTime: 10,
+            emojis: ['😂', '🙏', '😄', '😏', '😇', '😅', '😌', '😘', '😍', '🤓', '😜', '😎', '😊', '😳', '🙄', '😱', '😒', '😔', '😷', '👿', '🤗', '😩', '😤', '😣', '😰', '😴', '😬', '😭', '👻', '👍', '✌️', '👉', '👀', '🐶', '🐷', '😹', '⚡️', '🔥', '🌈', '🍏', '⚽️', '❤️', '🇨🇳'],
+            isShowEmoji: false,
+            oTextarea: {},
             isStart: false,
             modeItem: [
                 {
@@ -112,6 +155,8 @@ export default {
         // this.myScore = this.$route.params.myScore
         // this.yourScore = this.$route.params.mateScore
         this.inited = true
+        this.isShowEmoji = false
+        this.oTextarea = document.querySelector('input');
     },
     methods: {
         startGame () {
@@ -131,6 +176,36 @@ export default {
         gameOver () {
           // 11.28 加上游戏结束动画／弹窗
           this.scoreShow = true
+        },
+        
+        // 表情
+        showEmoji(flag) {
+            this.isShowEmoji = flag;
+            alert(this.isShowEmoji)           
+        },
+        insertText(str) {
+            str = str + ` `;
+            const oTextarea = this.$refs.inputBox;
+
+            if (document.selection) {
+                let sel = document.selection.createRange();
+                sel.text = str;
+            } else if (typeof oTextarea.selectionStart === 'number' && typeof oTextarea.selectionEnd ==='number') {
+                let startPos = oTextarea.selectionStart;
+                let endPos = oTextarea.selectionEnd;
+                let cursorPos = startPos;
+                let tempVal = oTextarea.value;
+                this.inputContent = tempVal.substring(0, startPos) + str + tempVal.substring(startPos, tempVal.length)
+                cursorPos += str.length;
+                oTextarea.selectionStart = oTextarea.selectionEnd = cursorPos;
+
+            } else {
+                oTextarea.value += str;
+            }
+            this.newLine();
+        },
+        newLine() {
+            setTimeout(() => this.oTextarea.scrollTop = this.oTextarea.scrollHeight, 0);
         }
     }
 }
@@ -154,6 +229,14 @@ export default {
     top: 50%;
     transform: translate(-50%, -50%);
 }
+.playerTop{
+    width: 100%;
+}
+.playerDown{
+    position: absolute;
+    bottom: 30px;
+    right: 0px;
+}
 .player1,
 .player2 {
     position: absolute;
@@ -174,8 +257,8 @@ export default {
     left: 30px;
 }
 .player2 {
-    bottom: 30px;
-    right: 30px;
+    bottom: 0px;
+    right: 0px;
 }
 .start, 
 .back {
@@ -270,4 +353,125 @@ export default {
     z-index:10000;
     color: #fff;
 }
+.avatarOpponent{
+    height: 31px;
+}
+.avatar{
+   height: 85%;
+}
+.avatarMy{
+    height: 31px;
+}
+.messageOpponent{
+    width: 75%;
+    height: 100%;
+    margin-left: 150px; 
+}
+.commentOpp {
+    position: relative;
+    width: 200px;
+    height: 50px;
+    background: #8C7B69;
+    border-radius: 5px;
+    margin-top: 16px;
+} 
+.commentOpp:before {
+    content: '';
+    position:absolute;
+    top: 16px;
+    left: -4px;
+    width: 16px;
+    height: 16px;
+    transform: rotate(45deg);
+    background-color: #8C7B69;
+}
+.inputOpp{
+    background:none;  
+    outline:none;  
+    border:none;
+    width: 100%;
+    margin-top: 5%;
+    margin-left: 8%;
+    height: 60%;
+    color:#F9F6F3;
+    font-size: 16px; 
+}
+.messageMy{
+    margin-right: 100px;
+    margin-bottom: 70px;   
+}
+.commentMy{
+    position: relative;
+    width: 260px;
+    background: #8C7B69;
+    border-radius: 5px;
+    margin-top: 3%;
+    float: right;
+    height: 50px;
+}
+.commentMy:before {
+    content: '';
+    position:absolute;
+    top: 16px;
+    right: -4px;
+    width: 16px;
+    height: 16px;
+    transform: rotate(45deg);
+    background-color: #8C7B69;
+}
+.inputMy{
+    background:none;
+    border:none;
+    outline:none;
+    color:#F9F6F3;
+    margin-top: 7%;
+    width: 50%;
+    font-size: 16px;
+}
+.inputMy::placeholder{
+    color: #F9F6F3;
+}
+.buttonInput{
+    padding: 0 3%;
+    height: 60%;
+    font-size: 14px;
+    background-color: #F9F6F3;
+    color: #8C7B69;
+    border-radius: 10px;
+    border-width: 0;
+}
+.emoji-display {
+    position: absolute;
+    width: 100%;
+    height: 210px;
+    background-color: white;
+    top: -210px;
+    left: 0;
+      overflow-y: auto;
+    ul {
+        display: flex;
+        flex-wrap: wrap;
+        li {
+            padding: 2px 3px;
+            font-size: 2.2rem;
+          }
+        }
+      }
+.emoji {
+    float: left;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 5px;
+    margin-top: 10px;
+    width: 30px;
+    height: 30px;
+    background-color: #8C7B69;
+    .icon-emoji {
+        width: 40px;
+        height: 100%;
+        background: url('../assets/icons/icon-emoji.svg') no-repeat;
+        background-size: contain;
+        }
+      }
 </style>
