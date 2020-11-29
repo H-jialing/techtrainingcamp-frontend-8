@@ -3,7 +3,7 @@
         <div>房间号: {{roomId}}</div>
 
         <!-- 11.28 对战模式，隐去开始游戏按钮 -->
-        <button class="start" @click="startGame" :disabled="!isReady" v-if="character === 1 && inited == true">开始游戏</button>
+        <button class="start" :class="{'isdisabled': !isReady}" @click="startGame" :disabled="!isReady" v-if="character === 1 && inited == true">开始游戏</button>
         <button class="back" @click="leaveRoom">退出房间</button>
         
         <div class="mode-wrap">
@@ -161,7 +161,8 @@ export default {
             scoreShow: false,
             // 11.28 模式选择
             mode: 1,
-            inited: false
+            inited: false,
+            isReady: true
         }
     },
     mounted() {
@@ -264,8 +265,10 @@ export default {
     },
     methods: {
         startGame () {
-            this.isStart = true
-            socket.emit("startGame",{"roomId": this.roomId})
+            if (this.isReady) {
+                this.isStart = true
+                socket.emit("startGame",{"roomId": this.roomId})
+            }
         },
         //向服务器发送离开房间的请求
         leaveRoom() {
@@ -380,6 +383,10 @@ export default {
     width: 80px;
     font-size: 16px;
     display: block;
+}
+.start.isdisabled {
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .mode-wrap:hover{
