@@ -96,13 +96,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+    $content-width: 30vw;
     %position-center {
         position: absolute;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
     }
-    $content-width: 120px;
     .wrapper {
         overflow:hidden;
          //  ========11.29=======   修改为固定定位
@@ -126,11 +127,10 @@ export default {
         filter: blur(5px);
     }
     .indexButton {
-        /* display: block; */
         width: 100%;
         height: 45px;
         line-height: 45px;
-        font-size: 24px;
+        font-size: 2rem;
         background-color: #8C7B69;
         color: #F9F6F3;
         border-radius: 10px;
