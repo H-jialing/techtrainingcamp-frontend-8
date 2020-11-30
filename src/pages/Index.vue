@@ -188,6 +188,7 @@ export default {
         color: #F9F6F3;
         border-radius: 10px;
         border-width: 0;
+        width: 45%;
     }
     .text-wrap {
         padding:10px 10px;
