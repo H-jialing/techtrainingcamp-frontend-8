@@ -108,6 +108,11 @@ io.on('connection', socket => {
         socket.to(data.roomId).emit("changeT",{"newTime": data.limitTime})
     });
 
+    //接受房主更改难度的命令并同步给房客
+    socket.on("changeLevel", data => {
+        socket.to(data.roomId).emit("changeL", {"mode": data.mode})
+    });
+
     //开始游戏
     socket.on("startGame", data => {
       socket.to(data.roomId).emit("start")

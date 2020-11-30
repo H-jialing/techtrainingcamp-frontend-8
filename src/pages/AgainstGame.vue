@@ -1,60 +1,68 @@
 <template>
-    <div>
-        <div>房间号: {{roomId}}</div>
+    <div class="againstBody">
+        <div class="roomName">
+            <p>房间号: {{roomId}}</p>
+        </div>
+        <div v-if="character === 0" class="gameMode">
+            <p>难度：{{mode}}</p>
+        </div>
 
         <!-- 11.28 对战模式，隐去开始游戏按钮 -->
-        <button class="start" :class="{'isdisabled': !isReady}" @click="startGame" :disabled="!isReady" v-if="character === 1 && inited == true">开始游戏</button>
-        <button class="back" @click="leaveRoom">退出房间</button>
-        
-        <div class="mode-wrap">
-            <div>难度设置</div>
-            <ul>
-                <li v-for="(item, index) in modeItem" :key="item.mode">
-                    <button :class="{'active': item.isModeActive}" @click="modeClick(index)">{{item.mode}}</button>
-                </li>
-            </ul>
-        </div>
-
-        <div class="score-wrap">
-            <div class="classic">
-                <div class="classic-wrap my-score">
-                    <p>我的分数</p>
-                    <p v-if="inited">{{this.$refs.gameboard.myScore}}</p>
-                </div>
-                <div class="classic-wrap your-score">
-                    <p>对方分数</p>
-                    <p v-if="inited">{{yourScore}}</p>
-                </div>
-            </div>
-
-            <div class="timer-wrap">
-                <div v-if="!isStart" class="limit-clock">
-                    <p>设置时间</p>
-                    <div>
-                        <input v-if="character ===1 " v-model="limitTime" type="text">
-                        <div v-else> {{limitTime}} </div>
+        <!-- 为测试更改显示 v-if="character === 1 && inited == true" -->
+        <div class="Top">
+            <div class="button-score">
+                <div class="buttonGroup">
+                    <button class="start" :class="{'isdisabled': !isReady}" @click="startGame" :disabled="!isReady" v-if="character === 1 && inited == true && isStart == false">开始游戏</button>
+                    <button class="back" @click="leaveRoom">退出房间</button>
+                    <div class="mode-wrap" v-if="character === 1">
+                        <div>难度设置</div>
+                        <ul>
+                            <li v-for="(item, index) in modeItem" :key="item.mode">
+                                <button :class="{'active': item.isModeActive}" @click="modeClick(index)">{{item.mode}}</button>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <div v-else class="limit-clock">
-                    <p>剩余时间</p>
-                    <p>{{this.$refs.gameboard.time}}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="playerTop">
-            <div class="player1">
-                <div class="picture">
-                    <div class="character">{{character === 1 ? '房客' : '房主'}}</div>
-                    <div class="avatarOpponent">
-                        <img src="../assets/img/boy.png" class="avatar">
+                <div class="score-wrap">
+                    <div class="classic-wrap my-score">
+                        <p>我的分数</p>
+                        <p v-if="inited">{{this.$refs.gameboard.myScore}}</p>
+                    </div>
+                    <div class="classic-wrap your-score">
+                        <p>对方分数</p>
+                        <p v-if="inited">{{yourScore}}</p>
+                    </div>
+                    <div class="timer-wrap">
+                        <div v-if="!isStart" class="limit-clock">
+                            <p>设置时间</p>
+                            <div>
+                                <input v-if="character ===1 " v-model="limitTime" type="text">
+                                <div v-else> 
+                                    <p>{{limitTime}}</p> 
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else class="limit-clock">
+                            <p>剩余时间</p>
+                            <p>{{this.$refs.gameboard.time}}</p>
+                        </div>
                     </div>
                 </div>
-                <div class="nickname">{{myName}}</div>
             </div>
-            <div class="messageOpponent">
-                <div class="commentOpp">
-                        <input ref="inputBox" v-model="receiveText" autofocus class="inputOpp" readonly="true">
+            <div class="playerTop">
+                <div class="player1">
+                    <div class="picture">
+                        <div class="character">{{character === 1 ? '房客' : '房主'}}</div>
+                        <div class="avatarOpponent">
+                            <img src="../assets/img/boy.png" class="avatar">
+                        </div>
+                    </div>
+                    <div class="nickname">{{myName}}</div>
+                </div>
+                <div class="messageOpponent">
+                    <div class="commentOpp">
+                            <input ref="inputBox" v-model="receiveText" autofocus class="inputOpp" readonly="true">
+                    </div>
                 </div>
             </div>
         </div>
@@ -117,6 +125,7 @@
 </template>
 
 <script>
+import { alert, closewin } from '../assets/utils'
 import GameBoard from '../components/Gameboard'
 import Room from '../components/Room'
 import io from 'socket.io-client'
@@ -131,8 +140,8 @@ export default {
     data () {
         return {
             roomId: 1,
-            myName: '我',
-            yourName: '',
+            myName: '',
+            yourName: '等待对手',
             character: null,   //1为房主，0为房客
             myScore: 0,
             yourScore: 0,
@@ -140,8 +149,7 @@ export default {
             isStart: false, //点击开始游戏，载入游戏前变为true
             isReady: false, //房内有两人后变为true
             emojis: ['😄', '😏', '😅', '😎', '👿', '😤', '😭', '👻', '👍', '✌️', '❤️'],
-            isShowEmoji: true,
-            oTextarea: {},
+            isShowEmoji: false,
             modeItem: [
                 {
                     mode: '简单模式',
@@ -162,7 +170,6 @@ export default {
             // 11.28 模式选择
             mode: 1,
             inited: false,
-            isReady: true,
             inputText: '',
             receiveText: ''
         }
@@ -201,9 +208,10 @@ export default {
             else {                  //如果我是房客
                 this.yourName = data.holder
             }
-            //将房主的当前设定时间传给房客
+            //将房主的当前设定时间、难度传给房客
             if(this.character == 1){
                 socket.emit("changeTime",{"roomId": this.roomId,"limitTime": this.limitTime} )
+                socket.emit("changeLevel",{"roomId": this.roomId, "mode": this.mode})
             }
         }),
 
@@ -227,13 +235,18 @@ export default {
         socket.on("memberleave", data => {
             if(this.character == 1){
                 alert("你的对手离开了游戏")
-                this.yourName = ''
+                this.yourName = '等待对手'
             }
         }),
         //房客同步房主设定时间
         socket.on("changeT", data => {
             //alert("房主更改了时间")
             this.limitTime = data.newTime
+        })
+
+        //房客同步房主设定难度
+        socket.on("changeL", data => {
+            this.mode = data.mode
         })
 
         //所有客户端都监听服务器发送的“开始游戏”信号
@@ -293,6 +306,7 @@ export default {
                     item.isModeActive = false
                 }
             })
+            socket.emit("changeLevel",{"roomId": this.roomId, "mode": this.mode})
         },
         //发送给对方自己的分数变化
         sendScore(myScore) {
@@ -301,17 +315,26 @@ export default {
         gameOver () {
             // 11.28 加上游戏结束动画／弹窗
             this.scoreShow = true
-            this.isStart = 0
+            this.isStart = false
             //socket.emit("gameover", {"roomId": this.roomId, "playerName": this.myName, "power": this.character})
         },
         
         // 表情
         showEmoji(flag) {
             this.isShowEmoji = flag;
-            alert(this.isShowEmoji)           
+            //alert(this.isShowEmoji)           
         },
         insertText(str) {
-            this.$refs.inputBox.value = this.$refs.inputBox.value + str
+            this.inputText += str
+        },
+
+        //发送给对方消息
+        sendMsg() {
+            socket.emit("send",
+                {"roomId": this.roomId, "msg": this.inputText},
+                (res) => {
+                    this.inputText = ''
+                })
         },
     }
 }
@@ -325,9 +348,9 @@ export default {
     font-size: 24px;
     background-color: #8C7B69;
     color: #F9F6F3;
-    border-radius: 10px;
+    border-radius: 5px;
     border-width: 0;
-    margin: 5px 0;
+    font-weight: 700;
 }
 %position-center {
     position: absolute;
@@ -335,69 +358,95 @@ export default {
     top: 50%;
     transform: translate(-50%, -50%);
 }
-.playerTop{
-    width: 100%;
-    height: 100px;
+.againstBody{
+    width :750px;
+    height: 700px;
+    margin: 0 auto;
+    padding-top: 100px;
 }
-.playerDown{
-    position: absolute;
-    bottom: 30px;
-    right: 0px;
-}
-.player1,
-.player2 {
-    position: absolute;
-    box-sizing: border-box;
-    border: 1px solid black;
-    width: 70px;
+.roomName{
+    width: 120px;
+    height: 30px;
     text-align: center;
-
-    .picture {
-        // box-sizing: border-box;
-        width: 100%;
-        height: 50px;
-        border: 1px solid black;
+    background-color: #8C7B69;
+    border-radius: 5px;
+    margin: 0 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    p{
+        line-height: 30px;
+        font-weight: 600;
+        color: #F9F6F3;
+        font-size: 1rem;
     }
 }
-.player1 {
-    top: 80px;
-    left: 30px;
+.gameMode{
+    width: 120px;
+    text-align: center;
+    margin: 0 auto;
+    p{
+        font-weight: 600;
+        color: #8C7B69;
+        font-size: 1rem;
+    }
 }
-.player2 {
-    bottom: 0px;
-    right: 0px;
+.Top{
+    width: 750px;
+    height: 100px;
+    margin-top: 50px;
 }
-.start, 
-.back {
+.button-score{
+    float: right;
+    height: 100px;
+}
+.buttonGroup{
+    width: 250px;
+    height: 33px;
+    font-weight: 700;
+    .button{
+        font-weight: 700;
+    }
+}
+.start{
     @extend %default-button;
     width: 80px;
-    font-size: 16px;
-    display: block;
+    font-size: 1rem;
+    display: inline;
+    border-radius: 8px;
+    border: 3px solid #E9CF7F;
+    margin-left: 5px;
 }
 .start.isdisabled {
     cursor: not-allowed;
     opacity: 0.6;
+} 
+.back {
+    @extend %default-button;
+    width: 80px;
+    font-size: 1rem;
+    display: inline;
+    border-radius: 8px;
+    border: 3px solid #E9CF7F;
 }
-
 .mode-wrap:hover{
     height: 100px;
 }
 .mode-wrap {
-    position: absolute;
-    top: 0;
-    right: 20px;
     overflow: hidden;
-    height: 20px;
+    width: 74px;
+    height: 21px;
+    line-height: 21px;
     cursor: pointer; 
     transition: all 0.35s;
-    font-size: 14px;
+    font-size: 1rem;
+    text-align: center;
     background-color: #8C7B69;
     color: #F9F6F3;
-    padding: 0px 5px;
-    border-radius: 8px;
+    border-radius: 5px;
     border: 3px solid #E9CF7F;
     z-index: 999;
-
+    display: inline;
+    float: left;
     div {
         box-sizing: border-box;
         height: 20px;
@@ -407,8 +456,9 @@ export default {
         box-sizing: border-box;
         height: 20px;
         margin: 5px 0;
+        z-index: 100;
         button {
-            font-size: 14px;
+            font-size: 1rem;
             background: #766553;
             color: #EBE0CB;
             padding: 0px 5px;
@@ -427,20 +477,36 @@ export default {
 .limit-clock,
 .clock,
 .classic-wrap {
-    position: absolute;
-    border-radius: 8px;
+    border-radius: 5px;
     border: 3px solid #E9CF7F;
-    top: 40px;
     text-align: center;
 }
+.score-wrap{
+    width: 250px;
+    height: 45px;
+    p{
+        color: #8C7B69;
+        font-weight: 700;
+    }
+}
 .my-score {
-    right: 100px;
+    width: 74px;
+    position: absolute;
+    z-index: -1;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .your-score {
-    right: 180px;
+    width: 74px;
+    position: absolute;
+    margin-left: 85px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .limit-clock {
-    right: 20px;
+    width: 74px;
+    position: absolute;
+    margin-left: 170px;
     input {
         width: 70px;
         text-align: center;
@@ -448,12 +514,64 @@ export default {
         color: red;
         border: 1px solid red;
         border-radius: 5px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
+.avatarOpponent{
+    height: 54px;
+}
+.avatar{
+   height: 100%;
+}
+.avatarMy{
+    height: 54px;
+}
+.playerTop{
+    width: 500px;
+    height: 100px;
+    display: inline;
+    float: left;
+}
+.player1,
+.player2 {
+    box-sizing: border-box;
+    border: 1px solid black;
+    width: 70px;
+    text-align: center;
+    .picture {
+        // box-sizing: border-box;
+        width: 100%;
+        height: 79px;
+        .character{
+            color: #8C7B69;
+            font-weight: 900;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+    .nickname{
+        color: #8C7B69;
+        font-weight: 900;
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+.player1 {
+    height: 100px;
+    width: 100px;
+    display: inline;
+    float: left;
+}
+.player2 {
+    height: 100px;
+    width: 100px;
+    display: inline;
+    float: right;
+}
 .game {
-    position: absolute;
-    bottom: 136px;
-    left: 19px;
+    margin: 0 auto;
 }
 .result-wrap {
     @extend %position-center;
@@ -464,20 +582,16 @@ export default {
     z-index:10000;
     color: #fff;
 }
-.avatarOpponent{
-    height: 31px;
-}
-.avatar{
-   height: 85%;
-}
-.avatarMy{
-    height: 31px;
+.playerDown{
+    width: 750px;
+    height: 100px;
+    margin-top: 50px;
 }
 .messageOpponent{
-    width: 75%;
-    height: 100%;
-    margin-top: 40px;
-    margin-left: 130px; 
+    width: 400px;
+    height: 100px;
+    display: inline;
+    float: left; 
 }
 .commentOpp {
     position: relative;
@@ -485,7 +599,8 @@ export default {
     height: 50px;
     background: #8C7B69;
     border-radius: 5px;
-    margin-top: 16px;
+    margin-top: 25px;
+    margin-left: 15px;
 } 
 .commentOpp:before {
     content: '';
@@ -509,17 +624,18 @@ export default {
     font-size: 16px; 
 }
 .messageMy{
-    margin-right: 100px;
-    margin-bottom: 70px;   
+    width: 650px;
+    height: 100px;  
 }
 .commentMy{
     position: relative;
-    width: 260px;
+    width: 250px;
     background: #8C7B69;
     border-radius: 5px;
     margin-top: 3%;
     float: right;
     height: 50px;
+    margin-right: 15px;
 }
 .commentMy:before {
     content: '';
@@ -530,28 +646,33 @@ export default {
     height: 16px;
     transform: rotate(45deg);
     background-color: #8C7B69;
+    z-index: -1;
 }
 .inputMy{
     background:none;
     border:none;
     outline:none;
     color:#F9F6F3;
-    margin-top: 7%;
-    margin-left: 2%;
-    width: 50%;
-    font-size: 16px;
+    margin-top: 16px;
+    margin-left: 15px;
+    width: 125px;
+    font-size: 1rem;
+    z-index: 50;
 }
 .inputMy::placeholder{
     color: #F9F6F3;
 }
 .buttonInput{
     padding: 0 3%;
-    height: 60%;
-    font-size: 14px;
+    height: 30px;
+    font-size: 1rem;
     background-color: #F9F6F3;
     color: #8C7B69;
     border-radius: 10px;
     border-width: 0;
+    margin-top: 10px;
+    margin-left: 10px;
+    z-index: 100;
 }
 .emoji-display {
     position: absolute;
@@ -588,4 +709,44 @@ export default {
         background-size: contain;
         }
       }
+
+@media only screen and (max-width: 450px) {
+    .againstBody{
+        width: 100%;
+        height: 100%;
+        padding-top: 0px;
+    }
+    .Top{
+        width: 100%;
+        height: 80px;
+        margin-top: 20px;
+    }
+    .button-score{
+        height: 80px;
+    }
+    .playerTop{
+        width: 100%;
+        height: 100px;
+        margin-bottom: 1%;
+    }
+    .player1{
+        width: 100px;
+        height: 100%;
+        margin-left: 5.5%;
+    }
+    .messageOpponent{
+        width: 250px;
+    }
+    .playerDown{
+        width:100%;
+        height: 100px;
+        margin-top: 1%;
+    }
+    .messageMy{
+        width: 300px;
+    }
+    .commentMy{
+        margin-top: 25px;
+    }
+}
 </style>
