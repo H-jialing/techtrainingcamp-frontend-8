@@ -67,11 +67,11 @@
                         <p class="result-title">我的分数</p> 
                         <p class="result-content">{{this.$refs.gameboard.myScore}}</p>
 
-                        <template v-if="type===2">
+                        <!-- <template v-if="type===2">
                             <p class="result-title">用时</p>
-                            <!-- 计时模式：获取游戏用时 -->
+                            计时模式：获取游戏用时
                             <p class="result-content">{{this.$refs.gameboard.time}}</p> 
-                        </template>
+                        </template> -->
                         <!-- 12.1 修改为限时模式下显示
                         <template v-if="type===1">
                             <p class="result-title">用时</p>
