@@ -57,7 +57,7 @@
                             <img src="../assets/img/boy.png" class="avatar">
                         </div>
                     </div>
-                    <div class="nickname">{{myName}}</div>
+                    <div class="nickname">{{yourName}}</div>
                 </div>
                 <div class="messageOpponent">
                     <div class="commentOpp">
@@ -268,6 +268,11 @@ export default {
             console.log("对手的新得分:",data.updatescore);
             this.yourScore = data.updatescore
         })
+
+        window.onbeforeunload = e => {      //刷新时弹出提示
+            console.log(1111, "离开页面");
+            socket.emit("leaveRoom",{"roomId": this.roomId, "playerName": this.myName, "power": this.character})
+        };
     },
     created() {
         //从vuex中拿到用户昵称和房间id
