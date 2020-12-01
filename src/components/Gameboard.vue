@@ -1,12 +1,6 @@
 <template>
   <div class="wrapper">
-    <!-- <div>
-      <button class="new-game" @click="init()">重新游戏</button>
-      <p>score:<span>{{myScore}}</span></p>
-      <p v-if="this.type==1">距离比赛结束还有：{{time}}</p>
-      <p v-if="this.type==2">还有：{{count}}</p>
-    </div> -->
-    <div class="container grid-container">
+    <div class="container grid-container" ref='gridRef'>
       <div class="container number-container" ref='numberRef'>
       </div>
       <div class="cell grid-cell"></div>
@@ -30,18 +24,19 @@
 </template>
 
 <script>
-import { numberInit, clearPoint, getRandom, getNum, canMoveLeft, canMoveRight, canMoveUp, canMoveDown, noBlockHorizontal, noBlockVertical, generateOneNum, HorAnimation, VerAnimation } from '../assets/utils'
+import { clearPoint, getRandom, getNum, canMoveLeft, canMoveRight, canMoveUp, canMoveDown, noBlockHorizontal, noBlockVertical, generateOneNum, HorAnimation, VerAnimation, EventUtil, } from '../assets/utils'
 export default {
   name: 'drawing',
-  props: ['level', 'type', 'setTime'],
+  props: ['level', 'type', 'setTime', 'changeScore'],
   data: () => {
     return {
       numberRef: null,
+      gridRef: null,
       point: [],
       myScore: 0,
       scoreChange: 0,
       // 计时变量，设置计时时间
-      time: 20,
+      time: 200,
       // 保存定时器
       timer: null,
       reg: new RegExp(' trans-scale'),
@@ -49,13 +44,25 @@ export default {
       // 速度模式
       count: 5,
       timeOut: null,
-      isStart: false
+      isStart: false,
+      eventUtil: null,
+      touchEvent: null,
+      keyEvent: null,
+      rich: 0,
+      winFlag: false,
+      pointMap: null
     }
   },
   // 钩子函数
+  created () {
+    this.eventUtil = new EventUtil(this.move)
+    this.touchEvent =this.eventUtil.handleTouchEvent.bind(this.eventUtil)
+    this.keyEvent =this.eventUtil.handleKeyEvent.bind(this.eventUtil)
+  },
   mounted () {
     this.numberRef = this.$refs.numberRef
-    // this.init()
+    this.gridRef = this.$refs.gridRef
+    this.rich = (this.gridRef.children[0].clientWidth - this.gridRef.children[1].clientWidth*4)/5 + this.gridRef.children[1].clientWidth
   },
   watch: {
     // 限时模式
@@ -75,16 +82,29 @@ export default {
     },
     scoreChange: {
       handler(scoreChange) {
-        if(scoreChange == 4) {
+        if(scoreChange >= 8) {
           this.$emit('scoreChange', scoreChange)
         }
+      }
+    },
+    changeScore: {
+      handler(newval, oldval) {
+        console.log('recived 惩罚', newval)
+
+        if(newval == 8 && this.pointMap.has(newval*2)) {
+          const l = this.pointMap.get(newval)
+          console.log(l)
+          this.numberRef.children[l[0] * 4 + l[1]].innerHTML = newval
+          this.point[l[0]][l[1]] = newval
+        }
+        this.$emit('initchangeScore')
       }
     },
     time: {
       handler(time) {
         if(time <= 0 && this.isStart) {
           this.$emit('gameOver')
-          document.removeEventListener('keydown', this.keydown)
+          this.removeEvent()
           clearInterval(this.timer)
           // ------ 这里考虑如何对比两个人的分数
           // 显示胜利／失败
@@ -105,28 +125,30 @@ export default {
       this.timeOut = setInterval(() => {
         this.count--
         if(this.count == 0) {
-          console.log('over')
           // 最后记得清除定时器，否则就算是服输也会一直计时
           clearInterval(this.timeOut)
+          if(this.timer) clearInterval(this.timer)
           // ======== 游戏结束弹窗／动画
           this.$emit("gameOver")
+          this.removeEvent()
         }
       }, 1000)
     },
-    keydown (event) {
-      if(this.type == 2) this.speedMode()
-      event = event || window.event
-      this.move(event)
-    },
     init () {
       this.isStart = true
+      this.winFlag = false
       // 所有归零
-      
-      document.addEventListener("keydown", this.keydown)
+      this.pointMap = new Map()
+
+      document.addEventListener("touchstart",  this.touchEvent, { passive: false })
+      document.addEventListener("touchend", this.touchEvent, { passive: false })  
+      document.addEventListener("touchmove", this.touchEvent, { passive: false }) 
+      document.addEventListener("keydown", this.keyEvent, { passive: false })
       if(this.setTime) this.time = this.setTime * 60
 
       clearPoint(this.point, this.anima)
-      numberInit(this.point, this.numberRef)
+      // numberInit(this.point, this.numberRef)
+      this.freshGrid()
       // ----- 设置计时时间
       // this.time = 600000
       this.myScore = 0
@@ -156,10 +178,10 @@ export default {
         this.init()
       }
     },
-    move (event) {
-      event = event || window.event
-      switch (event.which) {
-        case 37:
+    move (direction) {
+      if(this.type == 2) this.speedMode()
+      switch (direction) {
+        case 'left':
           if (canMoveLeft(this.point)) {
             this.moveLeft()          
             this.interval()
@@ -168,7 +190,7 @@ export default {
             this.isGameOver()
           }
           break
-        case 38:
+        case 'up':
           if (canMoveUp(this.point)) {
             this.moveUp()
             this.interval() 
@@ -176,7 +198,7 @@ export default {
             this.isGameOver()
           }
           break
-        case 39:
+        case 'right':
           if (canMoveRight(this.point)) {
             // 1. 同一列的要可以同时被加，如[2,2,2,2]
             this.moveRight()
@@ -185,7 +207,7 @@ export default {
             this.isGameOver()
           }
           break
-        case 40:
+        case 'down':
           if (canMoveDown(this.point)) {
             this.moveDown()
             this.interval()
@@ -210,13 +232,13 @@ export default {
                 this.point[i][k] = this.point[i][j]
                 // [i,j]的值归零
                 this.point[i][j] = 0
-                HorAnimation(this.numberRef, i, j, k)
+                HorAnimation(this.rich, this.numberRef, i, j, k)
                 // 跳出这个点的移动循环，因为此时这个点已经移动过
                 // 移动方式二：如果在[i,k]位置上的数字与[i,j]的数字相同，且从[i,k]到[i,j]之间没有障碍物
               } else if (this.point[i][j] !== 0 && this.point[i][k] === this.point[i][j] && noBlockHorizontal(this.point, i, k, j)) {
                 // 这里还是有bug，继续调试
                 // ====== 添加从[i,j]移动到[i,k]的动画
-                HorAnimation(this.numberRef, i, j, k)
+                HorAnimation(this.rich, this.numberRef, i, j, k)
                 if(addable || (this.point[i][j] != lastPoint)) {
                   this.myScore += this.point[i][j]
                   this.scoreChange = this.point[i][j]
@@ -245,13 +267,13 @@ export default {
           if (this.point[i][j] !== 0) {
             for (var k = 0; k < i; k++) {
               if (this.point[i][j] !== 0 && this.point[k][j] === 0 && noBlockVertical(this.point, j, k, i)) {
-                VerAnimation(this.numberRef, i, j, k)
+                VerAnimation(this.rich, this.numberRef, i, j, k)
                 // move
                 this.point[k][j] = this.point[i][j]
                 this.point[i][j] = 0
                 continue
               } else if (this.point[i][j] !== 0 && this.point[k][j] === this.point[i][j] && noBlockVertical(this.point, j, k, i)) {
-                VerAnimation(this.numberRef, i, j, k)
+                VerAnimation(this.rich, this.numberRef, i, j, k)
                 // move
                 // add
                 if(addable || (this.point[i][j] != lastPoint)) {
@@ -284,10 +306,10 @@ export default {
               if (this.point[i][j] !== 0 && this.point[i][j] !== 0 && this.point[i][k] === 0 && noBlockHorizontal(this.point, i, j, k)) { 
                 this.point[i][k] = this.point[i][j]
                 this.point[i][j] = 0
-                HorAnimation(this.numberRef, i, j, k)
+                HorAnimation(this.rich, this.numberRef, i, j, k)
                 continue
               } else if (this.point[i][j] !== 0 && this.point[i][j] !== 0 && this.point[i][k] === this.point[i][j] && noBlockHorizontal(this.point, i, j, k)) {
-                HorAnimation(this.numberRef, i, j, k)
+                HorAnimation(this.rich, this.numberRef, i, j, k)
                 if(addable || (this.point[i][j] != lastPoint)) {
                   this.scoreChange = this.point[i][j]
                   this.myScore += this.point[i][j]
@@ -316,12 +338,12 @@ export default {
           if (this.point[i][j] !== 0) {
             for (var k = 3; k > i; k--) {
               if (this.point[i][j] !== 0 && this.point[k][j] === 0 && noBlockVertical(this.point, j, i, k)) {
-                VerAnimation(this.numberRef, i, j, k)
+                VerAnimation(this.rich, this.numberRef, i, j, k)
                 this.point[k][j] = this.point[i][j]
                 this.point[i][j] = 0
                 continue
               } else if (this.point[i][j] !== 0 && this.point[k][j] === this.point[i][j] && noBlockVertical(this.point, j, i, k)) {
-                VerAnimation(this.numberRef, i, j, k)
+                VerAnimation(this.rich, this.numberRef, i, j, k)
                 if(addable || (this.point[i][j] != lastPoint)) {
                   this.scoreChange = this.point[i][j]
                   this.myScore += this.point[i][j]
@@ -345,6 +367,7 @@ export default {
     },
 
     freshGrid () {
+      this.pointMap.clear()
       this.numberRef.innerHTML = ''
       for (var i = 0; i < 4; i++) {
         for (var j = 0; j < 4; j++) {
@@ -352,6 +375,11 @@ export default {
           if (this.point[i][j] === 0) {
             el.className = 'number-cell'
           } else {
+            if(this.point[i][j] === 2048) {
+              this.winFlag = true
+            }
+            if(this.point[i][j] >= 64) this.pointMap.set(this.point[i][j], [i, j])
+
             el.innerHTML = this.point[i][j]
 
             if(this.anima[i][j]) {
@@ -370,10 +398,19 @@ export default {
           this.numberRef.appendChild(el)
         }
       }
+      if(this.winFlag) {
+        this.$emit('gameOver')
+        if(this.timer) clearInterval(this.timer)
+        if(this.timeout) clearInterval(this.timeout)
+        this.removeEvent()
+      }
     },
     isGameOver () {
       if(!canMoveLeft(this.point) && !canMoveRight(this.point) && !canMoveUp(this.point) && !canMoveDown(this.point)) {
         this.$emit("gameOver")
+        if(this.timer) clearInterval(this.timer)
+        if(this.timeout) clearInterval(this.timeout)
+        this.removeEvent()
         // ====== 增加 游戏结束 动画
         // ------- 对战模式下，通知对方对战已结束，判定对方胜利
       }
@@ -381,11 +418,17 @@ export default {
     interval () {
       setTimeout(() => {
         this.freshGrid()
-      }, 200) 
+      }, 220) 
       setTimeout(() => {
         if(this.level == 2) generateOneNum(this.point, this.numberRef, this.level)
         generateOneNum(this.point, this.numberRef, this.level)
       }, 300)
+    },
+    removeEvent () {
+      document.removeEventListener("touchstart",  this.touchEvent, { passive: false })
+      document.removeEventListener("touchend", this.touchEvent, { passive: false })
+      document.removeEventListener("touchmove", this.touchEvent, { passive: false })  
+      document.removeEventListener("keydown", this.keyEvent, { passive: false }) 
     }
   }
 }

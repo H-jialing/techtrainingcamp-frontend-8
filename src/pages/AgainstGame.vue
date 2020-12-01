@@ -4,7 +4,7 @@
             <p>房间号: {{roomId}}</p>
         </div>
         <div v-if="character === 0" class="gameMode">
-            <p>难度：{{mode}}</p>
+            <p>难度：{{modeItem[mode].mode}}</p>
         </div>
 
         <!-- 11.28 对战模式，隐去开始游戏按钮 -->
@@ -70,8 +70,11 @@
         <!-- <div>等待对手。。。</div> -->
         <!-- 11.28 删除监听事件 -->
         <GameBoard :level='mode' :type='1' 
-        :setTime='limitTime' @gameOver="gameOver" 
+        :setTime='limitTime' :changeScore="changeScore"
+        @gameOver="gameOver" 
         @newScore='sendScore'
+        @scoreChange="punishment"
+        @initchangeScore="initchangeScore"
         class="game" ref="gameboard" />
 
         <!-- <Room /> -->
@@ -152,16 +155,16 @@ export default {
             isShowEmoji: false,
             modeItem: [
                 {
-                    mode: '简单模式',
+                    mode: '简单',
                     isModeActive: false
                 }, 
                 {
                   // 11.28
-                    mode: '正常模式',
+                    mode: '正常',
                     isModeActive: true
                 }, 
                 {
-                    mode: '困难模式',
+                    mode: '困难',
                     isModeActive: false
                 }
             ],
@@ -171,7 +174,8 @@ export default {
             mode: 1,
             inited: false,
             inputText: '',
-            receiveText: ''
+            receiveText: '',
+            changeScore: 0
         }
     },
     mounted() {
@@ -254,6 +258,7 @@ export default {
             alert("Game Start!")
             this.isStart = true
             this.$nextTick(() => {
+                // console.log(this.$refs)
                 this.$refs.gameboard.init()
             })
         }),
@@ -267,6 +272,11 @@ export default {
         socket.on("updatescore", data =>{
             console.log("对手的新得分:",data.updatescore);
             this.yourScore = data.updatescore
+        }),
+        socket.on("score64", data => {
+            console.log('received punishment')
+          // console.log(data.score)
+            // this.changeScore = data.score
         })
 
         window.onbeforeunload = e => {      //刷新时弹出提示
@@ -342,6 +352,14 @@ export default {
                     this.inputText = ''
                 })
         },
+        punishment(score) {
+            console.log("惩罚", score);
+            socket.emit("scorechange",{"roomId": this.roomId, "score": score})
+
+        },
+        initchangeScore() {
+            this.changeScore = 0
+        }
     }
 }
 </script>

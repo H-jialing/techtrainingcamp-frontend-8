@@ -62,6 +62,8 @@
             <div v-if="scoreShow" class="result-mask">
                 <div class="result-wrap">
                     <div class="my-result-wrapper">
+
+                        <p class="result-title" v-if="this.$refs.gameboard.winFlag">Win!</p> 
                         <p class="result-title">我的分数</p> 
                         <p class="result-content">{{this.$refs.gameboard.myScore}}</p>
 
@@ -70,6 +72,13 @@
                             <!-- 计时模式：获取游戏用时 -->
                             <p class="result-content">{{this.$refs.gameboard.time}}</p> 
                         </template>
+                        <!-- 12.1 修改为限时模式下显示
+                        <template v-if="type===1">
+                            <p class="result-title">用时</p>
+                            计时模式：获取游戏用时
+                            ?????? 这里没有暴露参数，所以只能手动调节
+                            <p class="result-content">{{200-this.$refs.gameboard.time}}</p> 
+                        </template> -->
                         <div>
                             <button class="back" @click="() => scoreShow = false">返回</button>
                         </div>

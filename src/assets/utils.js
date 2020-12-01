@@ -10,7 +10,7 @@ export const getRandom = () => {
 export const getNum = (level) => {
   if(level == 0) {
     if (Math.random() < 0.6) return 2
-    else if(Math.random() < 0.9) return 4
+    else if(Math.random() < 0.8) return 4
     else return 32
   } else {
     if (Math.random() > 0.8) return 4
@@ -80,36 +80,36 @@ export const noBlockVertical = (point, col, row1, row2) => {
 }
 
 export const generateOneNum = (point, ref, level) => {
-  var x = getRandom()
-  var y = getRandom()
-  if (point[x][y] === 0) {
-    point[x][y] = getNum(level)
-    ref.children[x * 4 + y].innerHTML = point[x][y]
-    ref.children[x * 4 + y].setAttribute('class', 'cell number-cell' + point[x][y])
-  } else {
-    generateOneNum(point, ref)
+  let count = 50
+  while(count > 0) {
+    var x = getRandom()
+    var y = getRandom()
+    if (point[x][y] === 0) {
+      point[x][y] = getNum(level)
+      ref.children[x * 4 + y].innerHTML = point[x][y]
+      ref.children[x * 4 + y].setAttribute('class', 'cell number-cell' + point[x][y])
+      break
+    }
+    count--
   }
-}
-export const HorAnimation = (ref, i, j, k) => {
-  ref.children[i*4 + j].style.transform = 'translate(' + (k-j)*90 + 'px, 0)'
-}
-export const VerAnimation = (ref, i, j, k) => {
-  ref.children[i*4 + j].style.transform = 'translate(0, ' + (k-i)*90 + 'px)'
-}
-export const numberInit = (point, numberRef) => {
-  numberRef.innerHTML = ''
-  for(let i = 0; i < 4; i++) {
-    for(let j = 0; j < 4; j++) {
-      let el = document.createElement('div')
-      if(point[i][j] === 0) {
-        el.className = 'number-cell'
-      } else {
-        el.className = 'cell number-cell' + point[i][j]
-        el.innerHTML = point[i][j]
+  if(count <= 0) {
+    for(let i = 0; i < 4; i++) {
+      for(let j = 0; j < 4; j++) {
+        if(point[i][j] === 0) {
+          point[x][y] = getNum(level)
+          ref.children[x * 4 + y].innerHTML = point[x][y]
+          ref.children[x * 4 + y].setAttribute('class', 'cell number-cell' + point[x][y])
+          return
+        }
       }
-      numberRef.appendChild(el)
     }
   }
+}
+export const HorAnimation = (rich, ref, i, j, k) => {
+  ref.children[i*4 + j].style.transform = 'translate(' + (k-j)*rich + 'px, 0)'
+}
+export const VerAnimation = (rich, ref, i, j, k) => {
+  ref.children[i*4 + j].style.transform = 'translate(0, ' + (k-i)*rich + 'px)'
 }
 
 export const alert = (str) =>{
@@ -175,4 +175,63 @@ export const alert = (str) =>{
 export const closewin = () =>{
   document.body.removeChild(document.getElementById("alertbgDiv"));  
   document.body.removeChild(document.getElementById("alertmsgDiv"));
+}
+
+export const EventUtil = class {
+  constructor(move) {
+    this.move = move
+    this.startX = 0
+    this.startY = 0
+  }
+  handleTouchEvent (event) {
+    switch (event.type){
+        case "touchstart":
+            this.startX = event.touches[0].pageX;
+            this.startY = event.touches[0].pageY;
+            break;
+        case "touchend":
+            var spanX = event.changedTouches[0].pageX - this.startX;
+            var spanY = event.changedTouches[0].pageY - this.startY;
+  
+            if(Math.abs(spanX) > Math.abs(spanY)){      //认定为水平方向滑动
+                if(spanX > 30){         //向右
+                    this.move('right')
+                } else if(spanX < -30){ //向左
+                    this.move('left')
+                }
+            } else {                                    //认定为垂直方向滑动
+                if(spanY > 30){         //向下
+                    this.move('down')
+                } else if (spanY < -30) {//向上
+                    this.move('up')
+                }
+            }
+  
+            break;
+        case "touchmove":
+            //阻止默认行为
+            event.preventDefault();
+            break;
+    }
+  }
+  handleKeyEvent(event) {   
+      switch (event.which) {
+        case 37:
+          this.move('left')
+          break
+        case 38:
+          this.move('up')
+          break
+        case 39:
+          this.move('right')
+          break
+        case 40:
+          this.move('down')
+          break
+        default:
+          event.preventDefault();
+          break;
+      }
+  }
+  
 }

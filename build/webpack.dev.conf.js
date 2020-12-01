@@ -134,10 +134,10 @@ io.on('connection', socket => {
 
     //接受A完成了大的消块并返回给B接受对应惩罚
   socket.on("scorechange", data => {
-      if(data.score == 64) {
+      if(data.score > 4) {
           //返回另一个人合成128的惩罚
           console.log("触发了128块惩罚");
-          socket.to(data.roomId).emit("score64")
+          socket.to(data.roomId).emit("score64", {'score': data.score})
       }
   });
 
