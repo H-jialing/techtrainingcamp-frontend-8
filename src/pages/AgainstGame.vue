@@ -4,7 +4,7 @@
             <p>房间号: {{roomId}}</p>
         </div>
         <div v-if="character === 0" class="gameMode">
-            <p>难度：{{mode}}</p>
+            <p>难度：{{modeItem[mode].mode}}</p>
         </div>
 
         <!-- 11.28 对战模式，隐去开始游戏按钮 -->
@@ -37,8 +37,8 @@
                             <p>设置时间</p>
                             <div>
                                 <input v-if="character ===1 " v-model="limitTime" type="text">
-                                <div v-else> 
-                                    <p>{{limitTime}}</p> 
+                                <div v-else>
+                                    <p>{{limitTime}}</p>
                                 </div>
                             </div>
                         </div>
@@ -69,13 +69,16 @@
 
         <!-- <div>等待对手。。。</div> -->
         <!-- 11.28 删除监听事件 -->
-        <GameBoard :level='mode' :type='1' 
-        :setTime='limitTime' @gameOver="gameOver" 
+        <GameBoard :level='mode' :type='1'
+        :setTime='limitTime' :changeScore="changeScore"
+        @gameOver="gameOver"
         @newScore='sendScore'
+        @scoreChange="punishment"
+        @initchangeScore="initchangeScore"
         class="game" ref="gameboard" />
 
         <!-- <Room /> -->
-        <!-- 11.28 未做：在gameover和succes函数中控制游戏结果显示变量 
+        <!-- 11.28 未做：在gameover和succes函数中控制游戏结果显示变量
         -->
 
         <div class="playerDown">
@@ -114,7 +117,7 @@
                 </div>
         </div>
 
-        
+
         <div class="result-wrap" v-if="scoreShow">
             我的分数：{{this.$refs.gameboard.myScore}} VS 对手的分数：{{yourScore}}
             <div>
@@ -152,16 +155,16 @@ export default {
             isShowEmoji: false,
             modeItem: [
                 {
-                    mode: '简单模式',
+                    mode: '简单',
                     isModeActive: false
-                }, 
+                },
                 {
                   // 11.28
-                    mode: '正常模式',
+                    mode: '正常',
                     isModeActive: true
-                }, 
+                },
                 {
-                    mode: '困难模式',
+                    mode: '困难',
                     isModeActive: false
                 }
             ],
@@ -171,7 +174,8 @@ export default {
             mode: 1,
             inited: false,
             inputText: '',
-            receiveText: ''
+            receiveText: '',
+            changeScore: 0
         }
     },
     mounted() {
@@ -184,7 +188,7 @@ export default {
         socket.emit('joinRoom',
             { "playerName": this.myName, "roomId": this.roomId},
             (res) => {  //根据回调的power进入不同组件(房主/房客)
-                res.permission === 1 
+                res.permission === 1
                 ? this.character = 1
                 : this.character = 0
             }
@@ -193,7 +197,7 @@ export default {
         //房间已满，无法加入
         socket.on("full", data => {
             this.$router.push({
-                path: "/"   
+                path: "/"
             })
             alert(data.roomId + "房间已满，无法加入！")
         }),
@@ -254,6 +258,7 @@ export default {
             alert("Game Start!")
             this.isStart = true
             this.$nextTick(() => {
+                // console.log(this.$refs)
                 this.$refs.gameboard.init()
             })
         }),
@@ -267,12 +272,17 @@ export default {
         socket.on("updatescore", data =>{
             console.log("对手的新得分:",data.updatescore);
             this.yourScore = data.updatescore
+        }),
+        socket.on("score64", data => {
+          console.log('received punishment')
+          // console.log(data.score)
+            // this.changeScore = data.score
         })
     },
     created() {
         //从vuex中拿到用户昵称和房间id
-        this.myName = this.$store.state.nickName   
-        this.roomId = this.$store.state.roomId  
+        this.myName = this.$store.state.nickName
+        this.roomId = this.$store.state.roomId
     },
     watch: {
         limitTime: {
@@ -318,11 +328,11 @@ export default {
             this.isStart = false
             //socket.emit("gameover", {"roomId": this.roomId, "playerName": this.myName, "power": this.character})
         },
-        
+
         // 表情
         showEmoji(flag) {
             this.isShowEmoji = flag;
-            //alert(this.isShowEmoji)           
+            //alert(this.isShowEmoji)
         },
         insertText(str) {
             this.inputText += str
@@ -336,6 +346,14 @@ export default {
                     this.inputText = ''
                 })
         },
+        punishment(score) {
+            console.log("惩罚", score);
+            socket.emit("scorechange",{"roomId": this.roomId, "score": score})
+
+        },
+        initchangeScore() {
+            this.changeScore = 0
+        }
     }
 }
 </script>
@@ -419,7 +437,7 @@ export default {
 .start.isdisabled {
     cursor: not-allowed;
     opacity: 0.6;
-} 
+}
 .back {
     @extend %default-button;
     width: 80px;
@@ -436,7 +454,7 @@ export default {
     width: 74px;
     height: 21px;
     line-height: 21px;
-    cursor: pointer; 
+    cursor: pointer;
     transition: all 0.35s;
     font-size: 1rem;
     text-align: center;
@@ -591,7 +609,7 @@ export default {
     width: 400px;
     height: 100px;
     display: inline;
-    float: left; 
+    float: left;
 }
 .commentOpp {
     position: relative;
@@ -601,7 +619,7 @@ export default {
     border-radius: 5px;
     margin-top: 25px;
     margin-left: 15px;
-} 
+}
 .commentOpp:before {
     content: '';
     position:absolute;
@@ -613,19 +631,19 @@ export default {
     background-color: #8C7B69;
 }
 .inputOpp{
-    background:none;  
-    outline:none;  
+    background:none;
+    outline:none;
     border:none;
     width: 100%;
     margin-top: 5%;
     margin-left: 8%;
     height: 60%;
     color:#F9F6F3;
-    font-size: 16px; 
+    font-size: 16px;
 }
 .messageMy{
     width: 650px;
-    height: 100px;  
+    height: 100px;
 }
 .commentMy{
     position: relative;

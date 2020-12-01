@@ -28,9 +28,9 @@ io.on('connection', socket => {
   socket.on("joinRoom", function (data, fn) {
       socket.join(data.roomId); // join(房间名)加入房间
 
-      if (!roomInfo[data.roomId]){  
+      if (!roomInfo[data.roomId]){
         roomInfo[data.roomId] = []  //为新房间分配空间
-      } 
+      }
 
       //如果房间人数大于2了，不让加入
       if(roomInfo[data.roomId].length == 2){
@@ -51,34 +51,34 @@ io.on('connection', socket => {
           if(roomInfo[data.roomId].length == 2){
 
             //发送给房客
-            socket.emit("findmate", 
-                //房主是数组中第一个值，房客是第二个                
+            socket.emit("findmate",
+                //房主是数组中第一个值，房客是第二个
                 {"holder": roomInfo[data.roomId][0],"unholder": roomInfo[data.roomId][1]}
             )
             //发送给房主
-            socket.in(data.roomId).emit("findmate",               
-                {"holder": roomInfo[data.roomId][0],"unholder": roomInfo[data.roomId][1]}  
+            socket.in(data.roomId).emit("findmate",
+                {"holder": roomInfo[data.roomId][0],"unholder": roomInfo[data.roomId][1]}
             )
         }
-    
+
   });
   //退出房间
   socket.on("leaveRoom", function(data) {
-      
+
       //房主退出房间事件：发送信息让房间内所有客户端断开
       if(data.power == 1){
 
           //让其他人先离开
-          socket.to(data.roomId).emit("quit",{"power":data.power}) 
+          socket.to(data.roomId).emit("quit",{"power":data.power})
           console.log("所有人都被请出了房间")
 
           //自己离开
-          socket.emit("quit",{"power":data.power})                 
+          socket.emit("quit",{"power":data.power})
           console.log("房主退出了房间" + data.roomId)
 
           //清空房间数组中所有玩家信息
-          while(roomInfo[data.roomId].length>0){             
-              roomInfo[data.roomId].pop()     
+          while(roomInfo[data.roomId].length>0){
+              roomInfo[data.roomId].pop()
           }
       }
 
@@ -91,16 +91,16 @@ io.on('connection', socket => {
           var index = roomInfo[data.roomId].indexOf(data.playerName);
           if (index !== -1) {
             roomInfo[data.roomId].splice(index, 1);
-          } 
+          }
 
           //发送消息告诉房主
           socket.to(data.roomId).emit("memberleave")
       }
-      
+
       socket.leave(data.roomId)
       //console.log("当前房间内总人数为：",roomInfo[data.roomId].length)
       console.log(roomInfo)
-      
+
   });
 
     //接收房主更改时间的命令并同步给房客
@@ -134,10 +134,10 @@ io.on('connection', socket => {
 
     //接受A完成了大的消块并返回给B接受对应惩罚
   socket.on("scorechange", data => {
-      if(data.score == 64) {
+      if(data.score > 4) {
           //返回另一个人合成128的惩罚
           console.log("触发了128块惩罚");
-          socket.to(data.roomId).emit("score64")
+          socket.to(data.roomId).emit("score64", {'score': data.score})
       }
   });
 
@@ -148,7 +148,7 @@ io.on('connection', socket => {
     var index = roomInfo[data.roomId].indexOf(data.playerName);
     if (index !== -1) {
       roomInfo[data.roomId].splice(index, 1);
-    } 
+    }
     //连接断开
     console.log("连接已断开");
     socket.leave(data.roomId)

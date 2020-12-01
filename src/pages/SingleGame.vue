@@ -1,7 +1,7 @@
 <template>
     <div class="singel-wrapper">
         <div class="all-wrapper">
-            
+
             <!-- 11.28 开始游戏，已具备重新游戏的功能 -->
             <div class="btn-wrapper">
 
@@ -57,25 +57,28 @@
             <div class="game-wrapper">
                 <GameBoard :type="type" class="game" @gameOver="gameOver" ref="gameboard" />
             </div>
-            <!-- 11.28 未做：在gameover和succes函数中控制游戏结果显示变量 
+            <!-- 11.28 未做：在gameover和succes函数中控制游戏结果显示变量
             -->
             <div v-if="scoreShow" class="result-mask">
                 <div class="result-wrap">
                     <div class="my-result-wrapper">
-                        <p class="result-title">我的分数</p> 
-                        <p class="result-content">{{this.$refs.gameboard.myScore}}</p>
 
-                        <template v-if="type===2">
+                        <p class="result-title" v-if="this.$refs.gameboard.winFlag">Win!</p>
+                        <p class="result-title">我的分数</p>
+                        <p class="result-content">{{this.$refs.gameboard.myScore}}</p>
+                        <!-- 12.1 修改为限时模式下显示 -->
+                        <template v-if="type===1">
                             <p class="result-title">用时</p>
                             <!-- 计时模式：获取游戏用时 -->
-                            <p class="result-content">{{this.$refs.gameboard.time}}</p> 
+                            <!-- ?????? 这里没有暴露参数，所以只能手动调节 -->
+                            <p class="result-content">{{200-this.$refs.gameboard.time}}</p>
                         </template>
                         <div>
                             <button class="back" @click="() => scoreShow = false">返回</button>
                         </div>
                     </div>
                 </div>
-            </div>    
+            </div>
         </div>
     </div>
 </template>
@@ -93,13 +96,13 @@ export default {
                   // 11.28 默认经典模式
                     mode: '经典模式',
                     isModeActive: true
-                }, 
+                },
                 {
                     mode: '限时模式',
                     isModeActive: false
-                }, 
+                },
                 {
-                  // 11.28 
+                  // 11.28
                     mode: '速度模式',
                     isModeActive: false
                 }
@@ -140,7 +143,7 @@ export default {
         },
         startGame () {
             this.$refs.gameboard.init()
-        }, 
+        },
         gameOver () {
           // 11.28 加上游戏结束动画／弹窗
             this.scoreShow = true
@@ -208,7 +211,7 @@ $content-width: 55vw;
                 @extend %content-wrap;
             }
             .result-content {
-                margin-bottom: 3%; 
+                margin-bottom: 3%;
             }
 
             .back {
@@ -258,7 +261,7 @@ $content-width: 55vw;
             position: relative;
             top: 0;
             margin: 0;
-            
+
             .btn-wrapper {
                 position: relative;
                 height: 40%;
@@ -336,7 +339,7 @@ $content-width: 55vw;
                                 // right: calc(15vw / 2);
                                 overflow: hidden;
                                 height: 26px;
-                                cursor: pointer; 
+                                cursor: pointer;
                                 transition: all 0.35s;
                                 font-size: 14px;
                                 background-color: #8C7B69;
@@ -387,7 +390,7 @@ $content-width: 55vw;
                             }
                         }
                     }
-                
+
                 }
 
                 .score-wrap {
@@ -397,7 +400,7 @@ $content-width: 55vw;
                     bottom: 0;
                     display: flex;
                     justify-content: space-around;
-                    
+
 
                     .classic-wrap {
                         // position: absolute;
@@ -479,7 +482,7 @@ $content-width: 55vw;
             height: 789px;
             margin: auto;
             position: position;
-            
+
             .btn-wrapper {
                 position: relative;
                 height: 40%;
@@ -556,7 +559,7 @@ $content-width: 55vw;
                                 // right: calc(15vw / 2);
                                 overflow: hidden;
                                 height: 26px;
-                                cursor: pointer; 
+                                cursor: pointer;
                                 transition: all 0.35s;
                                 font-size: 14px;
                                 background-color: #8C7B69;
@@ -607,7 +610,7 @@ $content-width: 55vw;
                             }
                         }
                     }
-                
+
                 }
 
                 .score-wrap {
@@ -617,7 +620,7 @@ $content-width: 55vw;
                     bottom: 0;
                     display: flex;
                     justify-content: space-around;
-                    
+
 
                     .classic-wrap {
                         // position: absolute;
