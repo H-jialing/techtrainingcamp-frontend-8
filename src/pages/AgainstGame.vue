@@ -335,6 +335,7 @@ export default {
 
         //发送给对方消息
         sendMsg() {
+            this.isShowEmoji = false;
             socket.emit("send",
                 {"roomId": this.roomId, "msg": this.inputText},
                 (res) => {
@@ -415,9 +416,10 @@ export default {
 .start{
     @extend %default-button;
     width: 80px;
+    height: 27px;
     font-size: 1rem;
     display: inline;
-    border-radius: 8px;
+    border-radius: 5px;
     border: 3px solid #E9CF7F;
     margin-left: 5px;
 }
@@ -428,9 +430,10 @@ export default {
 .back {
     @extend %default-button;
     width: 80px;
+    height: 27px;
     font-size: 1rem;
     display: inline;
-    border-radius: 8px;
+    border-radius: 5px;
     border: 3px solid #E9CF7F;
 }
 .mode-wrap:hover{
@@ -515,10 +518,9 @@ export default {
     input {
         width: 70px;
         text-align: center;
-        font-size: 16px;
+        font-size: 1rem;
+        background-color: transparent;
         color: red;
-        border: 1px solid red;
-        border-radius: 5px;
         overflow: hidden;
         text-overflow: ellipsis;
     }
@@ -541,9 +543,10 @@ export default {
 .player1,
 .player2 {
     box-sizing: border-box;
-    border: 1px solid black;
+    border: 3px solid #8C7B69;
     width: 70px;
     text-align: center;
+    border-radius: 5px;
     .picture {
         // box-sizing: border-box;
         width: 100%;
@@ -582,12 +585,13 @@ export default {
     @extend %position-center;
     width: 200px;
     height: 200px;
-    border: 1px solid black;
+    border: 3px solid black;
     background-color: rgba(0,0,0,0.5);
     z-index:10000;
     color: #fff;
 }
 .playerDown{
+    position: relative;
     width: 750px;
     height: 100px;
     margin-top: 50px;
@@ -651,7 +655,6 @@ export default {
     height: 16px;
     transform: rotate(45deg);
     background-color: #8C7B69;
-    z-index: -1;
 }
 .inputMy{
     background:none;
@@ -662,7 +665,7 @@ export default {
     margin-left: 15px;
     width: 125px;
     font-size: 1rem;
-    z-index: 50;
+    z-index: 100;
 }
 .inputMy::placeholder{
     color: #F9F6F3;
@@ -677,16 +680,16 @@ export default {
     border-width: 0;
     margin-top: 10px;
     margin-left: 10px;
-    z-index: 100;
+    z-index: 10000;
 }
 .emoji-display {
     position: absolute;
     width: 100%;
-    height: 30px;
-    background-color: white;
-    top: -30px;
+    height: 50px;
+    background-color: #8C7B69;
+    top: -50px;
     left: 0;
-      overflow-y: auto;
+    overflow: hidden;
     ul {
         display: flex;
         flex-wrap: wrap;
@@ -714,6 +717,17 @@ export default {
         background-size: contain;
         }
       }
+.slide-bottom-enter-active {
+  transition: all .3s ease;
+}
+.slide-bottom-leave-active {
+  transition: all .2s ease;
+}
+.slide-bottom-enter, .slide-bottom-leave-active {
+  transform: translateY(30px);
+  opacity: 0;
+}
+
 
 @media only screen and (max-width: 450px) {
     .againstBody{
@@ -732,26 +746,42 @@ export default {
     .playerTop{
         width: 100%;
         height: 100px;
-        margin-bottom: 1%;
+        margin-bottom: 8%;
     }
     .player1{
         width: 100px;
         height: 100%;
-        margin-left: 5.5%;
+        margin-left: 30px;
     }
     .messageOpponent{
-        width: 250px;
+        width: 245px;
     }
     .playerDown{
         width:100%;
         height: 100px;
-        margin-top: 1%;
+        margin-top: 8%;
     }
     .messageMy{
-        width: 300px;
+        width: 245px;
     }
     .commentMy{
         margin-top: 25px;
+        width: 200px;
+        z-index: 1;
+    }
+    .commentMy:before{
+        z-index: 0;
+    }
+    .inputMy{
+        width: 96px;
+    }
+    .buttonInput{
+        margin-left: 0px;
+        z-index: 1;
+    }
+    .emoji-display{
+        height:40px;
+        top: -40px;
     }
 }
 </style>

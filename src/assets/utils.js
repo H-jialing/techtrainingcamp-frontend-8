@@ -114,11 +114,9 @@ export const numberInit = (point, numberRef) => {
 
 export const alert = (str) =>{
   var msgw, msgh, bordercolor;  
-      msgw=160;//提示窗口的宽度  
+      msgw=140;//提示窗口的宽度  
       msgh=40;//提示窗口的高度  
-      // titleheight=25; //提示窗口标题高度  
-      bordercolor="#336699";//提示窗口的边框颜色  
-      // titlecolor="#99CCFF";//提示窗口的标题颜色  
+      bordercolor="#E9CF7F";//提示窗口的边框颜色  
       var sWidth,sHeight;  
       //获取当前窗口尺寸  
       sWidth = document.body.offsetWidth;  
@@ -141,7 +139,7 @@ export const alert = (str) =>{
       var msgObj = document.createElement("div")  
       msgObj.setAttribute("id","alertmsgDiv");  
       msgObj.setAttribute("align","center"); 
-      msgObj.style.background="#787878";  
+      msgObj.style.background="#8C7B69";  
       msgObj.style.border="1px solid " + bordercolor;
       //div设置圆角  
       msgObj.style.setProperty('border-radius', '5px 5px 5px 5px', 'important');  
@@ -155,7 +153,12 @@ export const alert = (str) =>{
       msgObj.style.width = msgw + "px";  
       msgObj.style.height = msgh + "px";  
       msgObj.style.textAlign = "center";  
-      //msgObj.style.lineHeight ="25px";
+      msgObj.style.whiteSpace = "nowrap"
+      msgObj.style.overflow = "hidden";
+      msgObj.style.textOverflow = "ellipsis";  
+      msgObj.style.fontSize = "1rem";
+      msgObj.style.fontWeight = "600";
+      msgObj.style.lineHeight = "20px";
       msgObj.style.zIndex = "10001";  
       document.body.appendChild(msgObj);  
       //提示信息  
