@@ -97,7 +97,7 @@ export default {
 
 <style lang="scss" scoped>
 
-    $content-width: 30vw;
+    $content-width: 40vw;
     %position-center {
         position: absolute;
         left: 50%;
@@ -113,10 +113,10 @@ export default {
     }
     .title {
       // 11.29  修改题目的顶部距离
-        margin-top: 60px;
+        margin-top: 10vh;
         height: 100%;
         text-align: center;
-        font-size: 72px;
+        font-size: 8rem;
         color: #766E66;
     }
     .btn-wrap {
@@ -128,14 +128,13 @@ export default {
     }
     .indexButton {
         width: 100%;
-        height: 45px;
-        line-height: 45px;
+        padding: 0.6rem 0;
         font-size: 2rem;
         background-color: #8C7B69;
         color: #F9F6F3;
-        border-radius: 10px;
+        border-radius: 1rem;
         border-width: 0;
-        margin: 20px 0;
+        margin: 1.5rem 0;
         cursor: pointer;
     }
     .indexButton:hover {
@@ -167,13 +166,13 @@ export default {
     .menu-input {
         width: 100%;
         height: 45px;
-        font-size: 14px;
+        font-size: 1rem;
         border-radius: 10px;
-        margin: 10px 0;
-        border: 3px solid #E9CF7F;
+        margin: 1rem 0;
+        border: 0.4rem solid #E9CF7F;
         box-sizing: border-box;
         color: #d7920e;
-        padding: 0 5px;
+        padding: 0 1rem;
     }
     .menu-btn-wrap {
         display: flex;
@@ -181,9 +180,8 @@ export default {
     }
     .menu-btn {
         padding: 0 10px;
-        height: 35px;
-        line-height: 35px;
-        font-size: 16px;
+        padding: 0.5rem;
+        font-size: 1.3rem;
         background-color: #8C7B69;
         color: #F9F6F3;
         border-radius: 10px;
@@ -201,17 +199,17 @@ export default {
     .about-btn {
         float: right;
         background: transparent;
-        color: #766E66;
-        margin: 10px;
-        font-size: 16px;
+        color: #bcae9f;
+        margin: 1rem;
+        font-size: 1.3rem;
     }
     .about-btn::before {
         content: '';
         display: inline-block;
         width: 0;
         height: 0;
-        border: 5px solid #766E66;
-        border-color: transparent transparent transparent #766E66;
+        border: 5px solid #bcae9f;
+        border-color: transparent transparent transparent #bcae9f;
     }
     .slide-fade-enter-active {
         transition: all .3s ease;
