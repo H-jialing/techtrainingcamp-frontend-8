@@ -363,6 +363,12 @@ $content-width: 55vw;
                             display: block;
                             margin-top: 15px;
                         }
+                        .start:hover,
+                        .back:hover {
+                            background-color: #EBE0CB;
+                            color: #766E66;
+                            font-weight: bolder;
+                        }
                     }
                 }
             
