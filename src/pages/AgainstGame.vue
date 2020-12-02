@@ -1,127 +1,134 @@
 <template>
-    <div class="againstBody">
-        <div class="roomName">
-            <p>房间号: {{roomId}}</p>
-        </div>
-        <div v-if="character === 0" class="gameMode">
-            <p>难度：{{modeItem[mode].mode}}</p>
-        </div>
-
-        <!-- 11.28 对战模式，隐去开始游戏按钮 -->
-        <!-- 为测试更改显示 v-if="character === 1 && inited == true" -->
-        <div class="Top">
-            <div class="button-score">
-                <div class="buttonGroup">
-                    <button class="start" :class="{'isdisabled': !isReady}" @click="startGame" :disabled="!isReady" v-if="character === 1 && inited == true && isStart == false">开始游戏</button>
-                    <button class="back" @click="leaveRoom">退出房间</button>
-                    <div class="mode-wrap" v-if="character === 1">
-                        <div>难度设置</div>
-                        <ul>
-                            <li v-for="(item, index) in modeItem" :key="item.mode">
-                                <button :class="{'active': item.isModeActive}" @click="modeClick(index)">{{item.mode}}</button>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="score-wrap">
-                    <div class="classic-wrap my-score">
-                        <p>我的分数</p>
-                        <p v-if="inited">{{this.$refs.gameboard.myScore}}</p>
-                    </div>
-                    <div class="classic-wrap your-score">
-                        <p>对方分数</p>
-                        <p v-if="inited">{{yourScore}}</p>
-                    </div>
-                    <div class="timer-wrap">
-                        <div v-if="!isStart" class="limit-clock">
-                            <p>设置时间</p>
-                            <div>
-                                <input v-if="character ===1 " v-model="limitTime" type="text">
-                                <div v-else> 
-                                    <p>{{limitTime}}</p> 
-                                </div>
-                            </div>
-                        </div>
-                        <div v-else class="limit-clock">
-                            <p>剩余时间</p>
-                            <p>{{this.$refs.gameboard.time}}</p>
-                        </div>
-                    </div>
-                </div>
+    <div class="abody">
+        <div class="againstBody">
+            <div class="roomName">
+                <p>房间号: {{roomId}}</p>
             </div>
-            <div class="playerTop">
-                <div class="player1">
-                    <div class="picture">
-                        <div class="character">{{character === 1 ? '房客' : '房主'}}</div>
-                        <div class="avatarOpponent">
-                            <img src="../assets/img/boy.png" class="avatar">
-                        </div>
-                    </div>
-                    <div class="nickname">{{yourName}}</div>
-                </div>
-                <div class="messageOpponent">
-                    <div class="commentOpp">
-                            <input ref="inputBox" v-model="receiveText" autofocus class="inputOpp" readonly="true">
-                    </div>
-                </div>
+            <div v-if="character === 0" class="gameMode">
+                <p>难度：{{modeItem[mode].mode}}</p>
             </div>
-        </div>
 
-        <!-- <div>等待对手。。。</div> -->
-        <!-- 11.28 删除监听事件 -->
-        <GameBoard :level='mode' :type='1' 
-        :setTime='limitTime' :changeScore="changeScore"
-        @gameOver="gameOver" 
-        @newScore='sendScore'
-        @scoreChange="punishment"
-        @initchangeScore="initchangeScore"
-        class="game" ref="gameboard" />
-
-        <!-- <Room /> -->
-        <!-- 11.28 未做：在gameover和succes函数中控制游戏结果显示变量 
-        -->
-
-        <div class="playerDown">
-            <div class="player2">
-                <div class="picture">
-                    <div class="character">{{character === 1 ? '房主' : '房客'}}</div>
-                    <div class="avatarMy">
-                        <img src="../assets/img/girl.png" class="avatar">
-                    </div>
-                </div>
-                <div class="nickname">{{myName}}</div>
-            </div>
-            <div class="messageMy">
-                <div class="commentMy">
-                    <transition name="slide-bottom">
-                        <div v-show="isShowEmoji" class="emoji-display">
+            <!-- 11.28 对战模式，隐去开始游戏按钮 -->
+            <!-- 为测试更改显示 v-if="character === 1 && inited == true" -->
+            <div class="Top">
+                <div class="button-score">
+                    <div class="buttonGroup">
+                        <button class="start" :class="{'isdisabled': !isReady}" @click="startGame" :disabled="!isReady" v-if="character === 1 && inited == true && isStart == false">开始游戏</button>
+                        <button class="back" @click="leaveRoom">退出房间</button>
+                        <div class="mode-wrap" v-if="character === 1">
+                            <div>难度设置</div>
                             <ul>
-                                <li @click="insertText(item)" v-for="item of emojis" :key="item">{{item}}</li>
+                                <li v-for="(item, index) in modeItem" :key="item.mode">
+                                    <button :class="{'active': item.isModeActive}" @click="modeClick(index)">{{item.mode}}</button>
+                                </li>
                             </ul>
                         </div>
-                    </transition>
-                    <div class="emoji">
-                        <i @click="showEmoji(isShowEmoji=!isShowEmoji);" class="icon-emoji"></i>
                     </div>
-                        <input ref="inputBox"
-                        v-model="inputText"
-                        @keyup.enter="sendMsg"
-                        placeholder="请输入聊天内容"
-                        autofocus
-                        class="inputMy">
-                        <button
-                        :class="{'clickable': clickable}"
-                        @click="sendMsg" class="buttonInput"
-                        >发送</button>
+                    <div class="score-wrap">
+                        <div class="classic-wrap my-score">
+                            <p>我的分数</p>
+                            <p v-if="inited">{{this.$refs.gameboard.myScore}}</p>
+                        </div>
+                        <div class="classic-wrap your-score">
+                            <p>对方分数</p>
+                            <p v-if="inited">{{yourScore}}</p>
+                        </div>
+                        <div class="timer-wrap">
+                            <div v-if="!isStart" class="limit-clock">
+                                <p>设置时间</p>
+                                <div>
+                                    <input v-if="character ===1 " v-model="limitTime" type="text">
+                                    <div v-else> 
+                                        <p class="limit-clock-p">{{limitTime}}</p> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-else class="limit-clock">
+                                <p>剩余时间</p>
+                                <p class="limit-clock-p">{{this.$refs.gameboard.time}}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-        </div>
+                <div class="playerTop">
+                    <div class="player1">
+                        <div class="picture">
+                            <div class="character">{{character === 1 ? '房客' : '房主'}}</div>
+                            <div class="avatarOpponent">
+                                <img src="../assets/img/boy.png" class="avatar">
+                            </div>
+                        </div>
+                        <div class="nickname">{{yourName}}</div>
+                    </div>
+                    <div class="messageOpponent">
+                        <div class="commentOpp">
+                                <input ref="inputBox" v-model="receiveText" autofocus class="inputOpp" readonly="true">
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        
-        <div class="result-wrap" v-if="scoreShow">
-            我的分数：{{this.$refs.gameboard.myScore}} VS 对手的分数：{{yourScore}}
-            <div>
-                <button @click="() => scoreShow = false">返回</button>
+            <!-- <div>等待对手。。。</div> -->
+            <!-- 11.28 删除监听事件 -->
+            <GameBoard :level='mode' :type='1' 
+            :setTime='limitTime' :changeScore="changeScore"
+            @gameOver="gameOver" 
+            @newScore='sendScore'
+            @scoreChange="punishment"
+            @initchangeScore="initchangeScore"
+            class="game" ref="gameboard" />
+
+            <!-- <Room /> -->
+            <!-- 11.28 未做：在gameover和succes函数中控制游戏结果显示变量 
+            -->
+
+            <div class="playerDown">
+                <div class="player2">
+                    <div class="picture">
+                        <div class="character">{{character === 1 ? '房主' : '房客'}}</div>
+                        <div class="avatarMy">
+                            <img src="../assets/img/girl.png" class="avatar">
+                        </div>
+                    </div>
+                    <div class="nickname">{{myName}}</div>
+                </div>
+                <div class="messageMy">
+                    <div class="commentMy">
+                        <transition name="slide-bottom">
+                            <div v-show="isShowEmoji" class="emoji-display">
+                                <ul>
+                                    <li @click="insertText(item)" v-for="item of emojis" :key="item">{{item}}</li>
+                                </ul>
+                            </div>
+                        </transition>
+                        <div class="emoji">
+                            <i @click="showEmoji(isShowEmoji=!isShowEmoji);" class="icon-emoji"></i>
+                        </div>
+                            <input ref="inputBox"
+                            v-model="inputText"
+                            @keyup.enter="sendMsg"
+                            placeholder="请输入聊天内容"
+                            autofocus
+                            class="inputMy">
+                            <button
+                            :class="{'clickable': clickable}"
+                            @click="sendMsg" class="buttonInput"
+                            >发送</button>
+                        </div>
+                    </div>
+            </div>
+
+            <div v-if="scoreShow" class="result-mask">
+                <div class="result-wrap" v-if="scoreShow">
+                    <div class="result-wrap-aga">
+                        <p class="result-title">我的分数：{{this.$refs.gameboard.myScore}}</p> 
+                        <p class="result-content">VS</p> 
+                        <p class="result-title">对手的分数：{{yourScore}}</p>
+                        <div>
+                            <button class="back" @click="() => scoreShow = false">返回</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -151,7 +158,7 @@ export default {
             limitTime: 10,
             isStart: false, //点击开始游戏，载入游戏前变为true
             isReady: false, //房内有两人后变为true
-            emojis: ['😄', '😏', '😅', '😎', '👿', '😤', '😭', '👻', '👍', '✌️', '❤️'],
+            emojis: ['😂', '😄', '😏', '😅' ,'🤓', '😎', '👿', '😤', '😭', '👻', '👍', '✌️', '❤️'],
             isShowEmoji: false,
             modeItem: [
                 {
@@ -382,6 +389,12 @@ export default {
     top: 50%;
     transform: translate(-50%, -50%);
 }
+.abody{
+    width: 100%;
+    height: 100%;
+    background-image: url('../assets/img/bg1.jpeg');
+    background-repeat: repeat;
+}
 .againstBody{
     width :750px;
     height: 700px;
@@ -410,7 +423,7 @@ export default {
     margin: 0 auto;
     p{
         font-weight: 600;
-        color: #8C7B69;
+        color: #efdbaa;
         font-size: 1rem;
     }
 }
@@ -506,31 +519,45 @@ export default {
     border-radius: 5px;
     border: 3px solid #E9CF7F;
     text-align: center;
+    padding: 5px;
 }
 .score-wrap{
     width: 250px;
     height: 45px;
+    .timer-wrap{
+        width: 100%;
+        height: 100%;
+        .limit-clock-p{
+        border-bottom:0px;
+        padding-bottom:0rem;
+        }
+    }
     p{
-        color: #8C7B69;
+        color: #E9CF7F;
         font-weight: 700;
     }
+    p:nth-child(1) {
+        border-bottom: 1px solid #E9CF7F;
+        padding-bottom: 0.5rem;
+    }
+    
 }
 .my-score {
-    width: 74px;
+    width: 64px;
     position: absolute;
     z-index: -1;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 .your-score {
-    width: 74px;
+    width: 64px;
     position: absolute;
     margin-left: 85px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 .limit-clock {
-    width: 74px;
+    width: 64px;
     position: absolute;
     margin-left: 170px;
     input {
@@ -561,7 +588,7 @@ export default {
 .player1,
 .player2 {
     box-sizing: border-box;
-    border: 3px solid #8C7B69;
+    border: 3px solid #efdbaa;
     width: 70px;
     text-align: center;
     border-radius: 5px;
@@ -570,14 +597,14 @@ export default {
         width: 100%;
         height: 79px;
         .character{
-            color: #8C7B69;
+            color:#E9CF7F;
             font-weight: 900;
             overflow: hidden;
             text-overflow: ellipsis;
         }
     }
     .nickname{
-        color: #8C7B69;
+        color: #E9CF7F;
         font-weight: 900;
         width: 100%;
         overflow: hidden;
@@ -599,14 +626,62 @@ export default {
 .game {
     margin: 0 auto;
 }
-.result-wrap {
-    @extend %position-center;
-    width: 200px;
-    height: 200px;
-    border: 3px solid black;
-    background-color: rgba(0,0,0,0.5);
-    z-index:10000;
-    color: #fff;
+.result-mask {
+    // z-index: 999;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    .result-wrap {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 55%;
+        text-align: center;
+        .result-wrap-aga{
+            padding: 3%;
+            font-size: 2rem;
+            color: #EBE0CB;
+            font-weight: bold;
+            font-style: italic;
+            background-color: rgba(255,255,255,0.2);
+            box-shadow: 2px 3px 28px 16px;
+            border-radius: 1rem;
+            .result-title {
+                border-bottom: 0.1rem solid #efdbaa;
+                padding: 3%;
+                margin-bottom: 3%;
+                background-color: rgba(0,0,0,0.5);
+                border-radius: 1rem;
+            }
+            .result-content {
+                background-color: rgba(0,0,0,0.5);
+                border-radius: 1rem;
+            }
+            .result-content {
+                margin-bottom: 3%; 
+            }
+
+            .back {
+                background: transparent;
+                color: #b4a799;
+                margin: 10px;
+                font-size: 16px;
+                border: 0px;
+            }
+            .back::before {
+                content: '';
+                display: inline-block;
+                width: 0;
+                height: 0;
+                border: 5px solid #b4a799;
+                border-color: transparent transparent transparent #766E66;
+            }
+        }
+    }
 }
 .playerDown{
     position: relative;
@@ -683,7 +758,7 @@ export default {
     margin-left: 15px;
     width: 125px;
     font-size: 1rem;
-    z-index: 100;
+    z-index: 10;
 }
 .inputMy::placeholder{
     color: #F9F6F3;
@@ -698,7 +773,7 @@ export default {
     border-width: 0;
     margin-top: 10px;
     margin-left: 10px;
-    z-index: 10000;
+    z-index: 10;
 }
 .emoji-display {
     position: absolute;
@@ -746,8 +821,22 @@ export default {
   opacity: 0;
 }
 
+@media screen and (max-height: 900px) {
+    .abody{
+        height: 900px;
+    }
+}
+@media screen and (max-width: 750px){
+    .abody{
+        width: 750px;
+    }
+}
 
 @media only screen and (max-width: 450px) {
+    .abody{
+        height: 100%;
+        width: 100%;
+    }
     .againstBody{
         width: 100%;
         height: 100%;
@@ -755,51 +844,56 @@ export default {
     }
     .Top{
         width: 100%;
-        height: 80px;
-        margin-top: 20px;
+        height: 10%;
+        margin-top: 3%;
     }
     .button-score{
         height: 80px;
     }
     .playerTop{
-        width: 100%;
-        height: 100px;
-        margin-bottom: 8%;
+        width: 85%;
+        height: 140%;
+        margin-left: 7.5%;
+        margin-bottom: 5%;
     }
-    .player1{
-        width: 100px;
+    .player1,.player2{
+        width: 30%;
         height: 100%;
-        margin-left: 30px;
     }
     .messageOpponent{
-        width: 245px;
+        width: 70%;
+    }
+    .commentOpp{
+        width: 90%;
+        margin-top: 10%;
     }
     .playerDown{
-        width:100%;
-        height: 100px;
-        margin-top: 8%;
+        width:85%;
+        height: 14%;
+        margin-top: 5%;
+        margin-left: 7.5%;
     }
     .messageMy{
-        width: 245px;
+        width: 70%;
     }
     .commentMy{
-        margin-top: 25px;
-        width: 200px;
-        z-index: 1;
+        margin-top: 10%;
+        width: 90%;
+        z-index: 0;
     }
     .commentMy:before{
         z-index: 0;
     }
     .inputMy{
-        width: 96px;
+        width: 45%;
     }
     .buttonInput{
         margin-left: 0px;
         z-index: 1;
     }
     .emoji-display{
-        height:40px;
-        top: -40px;
+        height:80%;
+        top: -80%;
     }
 }
 </style>
