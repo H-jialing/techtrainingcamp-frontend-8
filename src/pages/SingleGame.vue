@@ -1,5 +1,5 @@
 <template>
-    <div class="singel-wrapper">
+    <div class="singel-wrapper" :class="{'fancy-skin': isFancySkin}">
         <div class="all-wrapper">
             
             <!-- 11.28 开始游戏，已具备重新游戏的功能 -->
@@ -7,7 +7,7 @@
 
                 <div class="title-func-wrapper">
                     <div class="title-wrapper">
-                        <div class="title">
+                        <div class="title" @click="() => isFancySkin = !isFancySkin">
                             <span>2</span><span>0</span><span>4</span><span>8</span>
                         </div>
                     </div>
@@ -123,7 +123,8 @@ export default {
             scoreShow: false,
             // 11.28 新增变量
             type: 0,
-            inited: false
+            inited: false,
+            isFancySkin: false
         }
     },
     mounted() {
@@ -674,4 +675,77 @@ $content-width: 55vw;
         }
     }
 }
+
+.fancy-skin {
+
+    .title {
+        box-shadow: 0px 0px 20px 3px #E9CF7F;
+    }
+
+    /deep/ .game {
+        .grid-container {
+            
+            background-color: rgba(255,255,255, 0.2);
+            .grid-cell {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+            .number-cell2 {
+                color: #EBE0CA;
+                background-color: rgba(247, 236, 236, 0.2);
+                box-shadow: 0px 0px 4px 1px #EBE0CA;
+            }
+            .number-cell4 {
+                color: #f1cf83;
+                background-color: rgba(241, 205, 111, 0.2);
+                box-shadow: 0px 0px 6px 3px #fcda90;
+            }
+            .number-cell8 {
+                color: #f5f2e7;
+                background-color: rgba(241, 207, 130, 0.33);
+                box-shadow: 0px 0px 7px 4px #eddea5;
+            }
+            .number-cell16 {
+                color: #f5f2e7;
+                background-color: #eddea5c2;
+                box-shadow: 0px 0px 7px 4px #eddea5;
+            }
+            .number-cell32 {
+                color: #F9F6F2;
+                background-color: #f67d6078;
+                box-shadow: 0px 0px 15px 4px #e0765d;
+            }
+            .number-cell64 {
+                color: #F9F6F2;
+                background-color: #f67d60;
+                box-shadow: 0px 0px 30px 13px #fe9b83;
+            }
+            .number-cell128 {
+                color: #F9F6F2;
+                background-color: #ff1616ab;
+                box-shadow: 0px 0px 15px 4px #f31818ab;
+            }
+            .number-cell256 {
+                color: #F9F6F2;
+                background-color: #d88dde75;
+                box-shadow: 0px 0px 10px 2px #d88ddef7;
+            }
+            .number-cell512 {
+                color: #F9F6F2;
+                background-color: #2482ef8f;
+                box-shadow: 0px 0px 10px 2px #2482efeb;
+            }
+            .number-cell1024 {
+                color: #F9F6F2;
+                background-color: #8c88de7d;
+                box-shadow: 0px 0px 10px 2px #a39ff1bf;
+            }
+            .number-cell2048 {
+                color: #F9F6F2;
+                background-color: #f5da74;
+                box-shadow: 0px 0px 35px 22px #fade76eb;
+            }
+        }
+    }
+}
+
 </style>

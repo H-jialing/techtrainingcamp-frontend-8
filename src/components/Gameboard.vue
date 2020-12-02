@@ -2,6 +2,17 @@
   <div class="wrapper">
     <div class="container grid-container" ref='gridRef'>
       <div class="container number-container" ref='numberRef'>
+        <!-- <div class="cell number-cell2">2</div>
+        <div class="cell number-cell4">4</div>
+        <div class="cell number-cell8">8</div>
+        <div class="cell number-cell16">16</div>
+        <div class="cell number-cell32">32</div>
+        <div class="cell number-cell64">64</div>
+        <div class="cell number-cell128">128</div>
+        <div class="cell number-cell256">256</div>
+        <div class="cell number-cell512">512</div>
+        <div class="cell number-cell1024">1024</div>
+        <div class="cell number-cell2048">2048</div> -->
       </div>
       <div class="cell grid-cell"></div>
       <div class="cell grid-cell"></div>
