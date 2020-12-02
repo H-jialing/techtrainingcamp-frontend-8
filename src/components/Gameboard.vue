@@ -452,23 +452,12 @@ $cell-width: 18vw;
 $cell-height: 18vw;
 $typical-font: 2.4rem;
 
-@media only screen and (max-width: 466px){ 
-  .wrapper {
+.wrapper {
     .container {
-      width: $container-width;
-      height: $container-height;
       box-sizing: border-box;
-      max-width: 484.5px;
-      max-height: 484.5px;
-      min-width: 272px;
-      min-height: 272px;
-      padding: calc(calc(100% - 4 * 18vw) / 5);
-      padding: clamp(8.3px, calc(calc(100% - 4 * 18vw) / 5), 15.3px);
-      border-radius: 1rem;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      /* 让矩阵的多根轴线同样均匀分布 */
       align-content: space-between;
     }
     .number-container {
@@ -483,20 +472,9 @@ $typical-font: 2.4rem;
       position: relative;
     }
     .cell {
-      width: $cell-width;
-      height: $cell-height;
-      max-width: 102px;
-      max-height: 102px;
-      min-width: 58px;
-      min-height: 58px;
-      border-radius: 1rem;
       background-color: rgba(0,0,0,1);
-      font-size: 3.5rem;
       font-weight: 700;
       text-align: center;
-      line-height: $cell-height;
-      line-height: clamp(58px, $cell-height, 102px);
-      // line-height: $cell-width;
       transition: background-color 0.18s ease-in-out, font-size 0.18s ease-in-out, transform 0.18s linear;
     }
     .trans-scale {
@@ -528,16 +506,6 @@ $typical-font: 2.4rem;
     }
     .grid-cell {
       background-color: #CDC1B4;
-    }
-    .number-cell {
-      width: $cell-width;
-      height: $cell-width;
-      max-width: 102px;
-      max-height: 102px;
-      min-width: 58px;
-      min-height: 58px;
-      /* transition: transform 0.2s; */
-      /* background-color: rgb(204, 238, 51); */
     }
     .number-cell2 {
       color: #776E66;
@@ -589,6 +557,42 @@ $typical-font: 2.4rem;
     font-size: $typical-font;
     }
   }
+
+@media only screen and (max-width: 466px){ 
+  .wrapper {
+    .container {
+      width: $container-width;
+      height: $container-height;
+      max-width: 484.5px;
+      max-height: 484.5px;
+      min-width: 272px;
+      min-height: 272px;
+      padding: 9px;
+      padding: calc(calc(100% - 4 * 18vw) / 5);
+      padding: clamp(8.3px, calc(calc(100% - 4 * 18vw) / 5), 15.3px);
+      border-radius: 1rem;
+    }
+    .cell {
+      width: $cell-width;
+      height: $cell-height;
+      max-width: 102px;
+      max-height: 102px;
+      min-width: 58px;
+      min-height: 58px;
+      border-radius: 1rem;
+      font-size: 3.5rem;
+      line-height: $cell-height;
+      line-height: clamp(58px, $cell-height, 102px);
+    }
+    .number-cell {
+      width: $cell-width;
+      height: $cell-width;
+      max-width: 102px;
+      max-height: 102px;
+      min-width: 58px;
+      min-height: 58px;
+    }
+  }
 }
 
 @media only screen and (min-width: 466px){
@@ -596,122 +600,19 @@ $typical-font: 2.4rem;
     .container {
       width: 410px;
       height: 410px;
-      box-sizing: border-box;
       padding: 10px;
       border-radius: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      /* 让矩阵的多根轴线同样均匀分布 */
-      align-content: space-between;
-    }
-    .number-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      background-color: rgba(0, 0, 0, 0.2);
-    }
-    .grid-container {
-      margin: auto;
-      background-color: #BBADA0;
-      position: relative;
     }
     .cell {
       width: 90px;
       height: 90px;
       border-radius: 10px;
-      background-color: rgba(0,0,0,1);
       font-size: 50px;
-      font-weight: 700;
-      /* 文字居中 */
-      text-align: center;
       line-height: 90px;
-      transition: background-color 0.18s ease-in-out, font-size 0.18s ease-in-out, transform 0.18s linear;
-    }
-    .trans-scale {
-      animation-name: overlap;
-      animation-timing-function: linear;
-      animation-iteration-count: 1;
-      animation-duration: 0.5s;
-    }
-    @keyframes overlap {
-      from {
-        transform: scale(1);
-      }
-      20% {
-        transform: scale(1.1);
-      } 
-      40% {
-        transform: rotate(3deg);
-      }
-      60% {
-        transform: rotate(-3deg);
-      }
-      80% {
-        transform: rotate(0);
-      }
-      to {
-        transform: scale(1);
-      }
-
-    }
-    .grid-cell {
-      background-color: #CDC1B4;
     }
     .number-cell {
       width: 90px;
       height: 90px;
-      /* transition: transform 0.2s; */
-      /* background-color: rgb(204, 238, 51); */
-    }
-    .number-cell2 {
-      color: #776E66;
-      background-color: #EEE4DA;
-    }
-    .number-cell4{
-    color: #776E66;
-    background-color: #EDE0C8;
-    }
-    .number-cell8{
-    color: #F9F6F2;
-    background-color: #F2B179;
-    }
-    .number-cell16 {
-    color: #F9F6F2;
-    background-color: #F59563;
-    }
-    .number-cell32 {
-    color: #F9F6F2;
-    background-color: #F67D60;
-    }
-    .number-cell64 {
-    color: #F9F6F2;
-    background-color: #F65E3B;
-    }
-    .number-cell128 {
-    color: #F9F6F2;
-    background-color: #ecd27b;
-    font-size: $typical-font;
-    }
-    .number-cell256 {
-    color: #F9F6F2;
-    background-color: #EDCD61;
-    font-size: $typical-font;
-    }
-    .number-cell512 {
-    color: #F9F6F2;
-    background-color:  #e4c049;
-    font-size: $typical-font;
-    }
-    .number-cell1024 {
-    color: #F9F6F2;
-    background-color: #dab22f;
-    font-size: $typical-font;
-    }
-    .number-cell2048 {
-    color: #F9F6F2;
-    background-color: rgb(255, 187, 85);
-    font-size: $typical-font;
     }
   }
 }

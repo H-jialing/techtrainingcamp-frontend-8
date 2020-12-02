@@ -1,10 +1,12 @@
 <template>
     <div class="wrapper">
-        <h1 class="title">2048</h1>
-        <div class="btn-wrap" :class="{'blur': dialog || showAbout}">
-            <button class="indexButton" @click="showDialog">联机游戏</button>
-            <button class="indexButton" @click="startGame">单人游戏</button>
-            <button class="indexButton" @click="() => showAbout = true">About</button>
+        <div class="index-wrap">
+            <h1 class="title">2048</h1>
+            <div class="btn-wrap" :class="{'blur': dialog || showAbout}">
+                <button class="indexButton" @click="showDialog">联机游戏</button>
+                <button class="indexButton" @click="startGame">单人游戏</button>
+                <button class="indexButton" @click="() => showAbout = true">About</button>
+            </div>
         </div>
 
         <transition name="slide-fade">
@@ -96,64 +98,73 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$content-width: 40vw;
+%position-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+.wrapper {
+    position: fixed;
+    width: 100%;
+    height: 100%;
 
-    $content-width: 40vw;
-    %position-center {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-    }
-    .wrapper {
-        overflow:hidden;
-         //  ========11.29=======   修改为固定定位
-        position: fixed;
-        width: 100%;
-        height: 100%;
-    }
-    .title {
-      // 11.29  修改题目的顶部距离
-        margin-top: 10vh;
-        height: 100%;
-        text-align: center;
-        font-size: 8rem;
-        color: #766E66;
-    }
-    .btn-wrap {
+    .index-wrap {
+        width: 60%;
+        height: 80%;
+        position: relative;
         @extend %position-center;
-        width: $content-width;
+        display: flex;
+        justify-content: center;
+        align-content: center;
+
+        .title {
+            position: absolute;
+            font-size: 8rem;
+            color: #766E66;
+        }
+
+        .btn-wrap {
+            @extend %position-center;
+            width: $content-width;
+
+            .indexButton {
+                width: 100%;
+                padding: 0.6rem 0;
+                font-size: 2rem;
+                background-color: #8C7B69;
+                color: #F9F6F3;
+                border-radius: 1rem;
+                border-width: 0;
+                margin: 1.5rem 0;
+                cursor: pointer;
+            }
+            .indexButton:hover {
+                background-color: #EBE0CB;
+                color: #766E66;
+                font-weight: bolder;
+            }
+        }
+        .blur {
+            filter: blur(5px);
+        }
     }
-    .blur {
-        filter: blur(5px);
-    }
-    .indexButton {
-        width: 100%;
-        padding: 0.6rem 0;
-        font-size: 2rem;
-        background-color: #8C7B69;
-        color: #F9F6F3;
-        border-radius: 1rem;
-        border-width: 0;
-        margin: 1.5rem 0;
-        cursor: pointer;
-    }
-    .indexButton:hover {
-        background-color: #EBE0CB;
-        color: #766E66;
-        font-weight: bolder;
-    }
-    .pop-up {
-        @extend %position-center;
-        z-index: 999;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.3);
-        // filter: blur(5px);
-    }
+}
+
+.pop-up {
+    @extend %position-center;
+    z-index: 999;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.3);
+    // filter: blur(5px);
+
     .pop-wrap {
         @extend %position-center;
         width: $content-width;
     }
+
     .show-about-wrap {
         font-size: 20px;
         color: #EBE0CB;
@@ -163,6 +174,10 @@ export default {
         background-color: rgba(255,255,255,0.1);
         box-shadow: 2px 3px 28px 16px;
     }
+}
+
+.pop-wrap {
+
     .menu-input {
         width: 100%;
         height: 45px;
@@ -176,25 +191,31 @@ export default {
     }
     .menu-btn-wrap {
         display: flex;
-        justify-content: space-between; 
+        justify-content: space-between;
+
+        .menu-btn {
+            padding: 0 10px;
+            padding: 0.5rem;
+            font-size: 1.3rem;
+            background-color: #8C7B69;
+            color: #F9F6F3;
+            border-radius: 10px;
+            border-width: 0;
+            width: 45%;
+        }
     }
-    .menu-btn {
-        padding: 0 10px;
-        padding: 0.5rem;
-        font-size: 1.3rem;
-        background-color: #8C7B69;
-        color: #F9F6F3;
-        border-radius: 10px;
-        border-width: 0;
-        width: 45%;
-    }
+}
+
+.pop-wrap {
+
     .text-wrap {
         padding:10px 10px;
-    }
-    .about-title {
-        border-bottom: 1px solid #efdbaa;
-        padding: 5px;
-        margin-bottom: 10px;
+
+        .about-title {
+            border-bottom: 1px solid #efdbaa;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
     }
     .about-btn {
         float: right;
@@ -211,14 +232,16 @@ export default {
         border: 5px solid #bcae9f;
         border-color: transparent transparent transparent #bcae9f;
     }
-    .slide-fade-enter-active {
-        transition: all .3s ease;
-    }
-    .slide-fade-leave-active {
-        transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-    }
-    .slide-fade-enter, .slide-fade-leave-to {
-        transform: translateX(10px);
-        opacity: 0;
-    }
+}
+
+.slide-fade-enter-active {
+    transition: all .3s ease;
+}
+.slide-fade-leave-active {
+    transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-enter, .slide-fade-leave-to {
+    transform: translateX(10px);
+    opacity: 0;
+}
 </style>

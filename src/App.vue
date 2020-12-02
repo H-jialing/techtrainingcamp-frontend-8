@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <router-view/>
+    <transition name="fade">
+      <router-view/>
+    </transition>
   </div>
 </template>
 
@@ -11,26 +13,6 @@ export default {
 </script>
 
 <style>
-/* @media only screen and (min-width: 1280px){
-  html{
-    font-size: 18px;
-  }
-}
-@media only screen and (max-width: 1280px) and (min-width: 960px){
-  html{
-    font-size: 14px;
-  }
-}
-@media only screen and (min-width: 530px) and (max-width: 960px){
-  html{
-    font-size: 12px;
-  }
-}
-@media only screen and (max-width: 530px){
-  html{
-    font-size: 10px;
-  }
-} */
 @media only screen and (min-width: 466px){
   html{
     font-size: 14px;
@@ -65,11 +47,16 @@ button {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* text-align: center;
-  color: #2c3e50; */
-  /* margin-top: 60px; */
   width: 100%;
   height: 100%;
   background-image: url('./assets/img/bg1.jpeg');
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
 }
 </style>

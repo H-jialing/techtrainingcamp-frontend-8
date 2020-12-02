@@ -7,8 +7,9 @@
 
                 <div class="title-func-wrapper">
                     <div class="title-wrapper">
-                        <div class="title" @click="() => isFancySkin = !isFancySkin">
+                        <div class="title" @click="() => {isFancySkin = !isFancySkin; isShowTip = false}">
                             <span>2</span><span>0</span><span>4</span><span>8</span>
+                            <div v-if="isShowTip" :class="{'skin-tip': isShowTip}">点我</div>
                         </div>
                     </div>
 
@@ -124,7 +125,8 @@ export default {
             // 11.28 新增变量
             type: 0,
             inited: false,
-            isFancySkin: false
+            isFancySkin: false,
+            isShowTip: true
         }
     },
     mounted() {
@@ -161,15 +163,11 @@ export default {
 
 <style lang="scss" scoped>
 %default-button {
-    // width: 100%;
-    // height: 45px;
-    // line-height: 45px;
     font-size: 24px;
     background-color: #8C7B69;
     color: #F9F6F3;
     border-radius:1rem;
     border-width: 0;
-    // margin: 20px 0;
 }
 %position-center {
     position: absolute;
@@ -177,7 +175,6 @@ export default {
     top: 50%;
     transform: translate(-50%, -50%);
 }
-$button-background: #8C7B69;
 $content-width: 55vw;
 %content-wrap {
     background-color: rgba(0,0,0,0.5);
@@ -185,7 +182,6 @@ $content-width: 55vw;
 }
 
 .result-mask {
-    // z-index: 999;
     position: absolute;
     top: 0;
     left: 0;
@@ -239,441 +235,269 @@ $content-width: 55vw;
     }
 }
 
+.singel-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+
+    .all-wrapper {
+        position: relative;
+        
+        .btn-wrapper {
+            position: relative;
+            height: 40%;
+
+            .title-func-wrapper {
+                position: absolute;
+                width: 100%;
+                height: 70%;
+                top: 0;
+
+                .title-wrapper {
+                    position: absolute;
+                    height: 100%;
+                    width: 50%;
+                    left: 0;
+                    .title {
+                        position: absolute;
+                        text-align: center;
+                        font-weight: 700;
+                        border: 3px solid #E9CF7F;
+                        border-radius: 1rem;
+                        box-sizing: border-box;
+                        cursor: pointer;
+
+                        span:nth-child(1) {
+                            color: #F59563;
+                        }
+                        span:nth-child(2) {
+                            color: #F65E3B;
+                        }
+                        span:nth-child(3) {
+                            color: #EDCD61;
+                        }
+                        span:nth-child(4) {
+                            color: rgb(255, 187, 85);
+                        }
+                        .skin-tip {
+                            font-size: 1rem;
+                            position: absolute;
+                            color: #f59563;
+                            line-height: 1rem;
+                            top: 0.5rem;
+                            margin-left: -1rem;
+                        }
+                    }
+                }
+
+                .func-wrapper {
+                    position: absolute;
+                    height: 100%;
+                    width: 50%;
+                    right: 0;
+                    .func-btn-wrap {
+                        position: absolute;
+                        width: 100px;
+                        height: 100px;
+                        text-align: center;
+
+                        .mode-wrap:hover{
+                            height: 100px;
+                            position: absolute;
+                        }
+                        .mode-wrap > div::before {
+                            content: '';
+                            display: inline-block;
+                            width: 0;
+                            height: 0;
+                            border: 5px solid #766E66;
+                            border-color: transparent transparent transparent #F67D60;
+                        }
+                        .mode-wrap {
+                            overflow: hidden;
+                            height: 26px;
+                            cursor: pointer; 
+                            transition: all 0.35s;
+                            font-size: 14px;
+                            background-color: #8C7B69;
+                            color: #F9F6F3;
+                            padding: 0px 5px;
+                            border-radius: 8px;
+                            border: 3px solid #E9CF7F;
+                            z-index: 999;
+                            box-sizing: border-box;
+                            width: 100px;
+
+                            div {
+                                box-sizing: border-box;
+                                height: 20px;
+                                padding: 0px 5px;
+                            }
+                            ul > li {
+                                box-sizing: border-box;
+                                height: 20px;
+                                margin: 5px 0;
+                                button {
+                                    font-size: 14px;
+                                    background: #766553;
+                                    color: #EBE0CB;
+                                    padding: 0px 5px;
+                                }
+                                button:hover {
+                                    cursor: pointer;
+                                    background-color: #EBE0CB;
+                                    color: #766E66;
+                                    font-weight: bolder;
+                                }
+                            }
+                            .active {
+                                font-weight: 700;
+                                color: #F67D60;
+                            }
+                        }
+                        .start,
+                        .back {
+                            @extend %default-button;
+                            width: 100%;
+                            font-size: 16px;
+                            display: block;
+                            margin-top: 15px;
+                        }
+                    }
+                }
+            
+            }
+
+            .score-wrap {
+                width: 100%;
+                height: 30%;
+                position: absolute;
+                bottom: 0;
+                display: flex;
+                justify-content: space-around;
+                
+
+                .classic-wrap {
+                    border: 3px solid #E9CF7F;
+                    border-radius: 8px;
+                    text-align: center;
+
+                    p:nth-child(1) {
+                        border-bottom: 1px solid #E9CF7F;
+                        padding-bottom: 0.5rem;
+                    }
+                }
+                .score {
+                    color: #EDCD61;
+                }
+                .best-score {
+                    color: #ffbb55
+                }
+                .timer-wrap {
+                    color: #F65E3B;
+                }
+            }
+        }
+        .game-wrapper {
+            position: relative;
+            height: 60%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+}
+
 @media only screen and (max-width: 466px){
-    @mixin default-button () {
-        // width: 100%;
-        // height: 45px;
-        // line-height: 45px;
-        font-size: 24px;
-        background-color: #8C7B69;
-        color: #F9F6F3;
-        border-radius:1rem;
-        border-width: 0;
-        // margin: 20px 0;
-    }
-    @mixin position-center () {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-    }
     .singel-wrapper {
-        width: 100%;
-        height: 100%;
 
         .all-wrapper {
             width: 100%;
             height: 100%;
-            margin: 5vw;
-            position: relative;
-            top: 0;
-            margin: 0;
             
             .btn-wrapper {
-                position: relative;
-                height: 40%;
 
                 .title-func-wrapper {
-                    position: absolute;
-                    width: 100%;
-                    height: 70%;
-                    top: 0;
 
                     .title-wrapper {
-                        position: absolute;
-                        height: 100%;
-                        width: 50%;
-                        left: 0;
+
                         .title {
-                            position: absolute;
                             width: 10rem;
                             height: 10rem;
                             line-height: 10rem;
-                            text-align: center;
-                            font-weight: 700;
                             font-size: 4rem;
-                            border: 3px solid #E9CF7F;
-                            border-radius: 1rem;
                             right: 5vh;
                             bottom: 5vh;
-                            box-sizing: border-box;
-                            cursor: pointer;
-
-                            span:nth-child(1) {
-                                color: #F59563;
-                            }
-                            span:nth-child(2) {
-                                color: #F65E3B;
-                            }
-                            span:nth-child(3) {
-                                color: #EDCD61;
-                            }
-                            span:nth-child(4) {
-                                color: rgb(255, 187, 85);
+                            .skin-tip {
+                                left: 5rem;
                             }
                         }
                     }
 
                     .func-wrapper {
-                        position: absolute;
-                        height: 100%;
-                        width: 50%;
-                        right: 0;
                         .func-btn-wrap {
-                            position: absolute;
                             left: 5vh;
                             bottom: 5vh;
-                            width: 100px;
-                            height: 100px;
-                            // display: flex;
-                            // align-items: space-between;
-                            text-align: center;
-
-                            .mode-wrap:hover{
-                                height: 100px;
-                                position: absolute;
-                            }
-                            .mode-wrap > div::before {
-                                content: '';
-                                display: inline-block;
-                                width: 0;
-                                height: 0;
-                                border: 5px solid #766E66;
-                                border-color: transparent transparent transparent #F67D60;
-                            }
-                            .mode-wrap {
-                                // position: absolute;
-                                // top: 0;
-                                // right: calc(15vw / 2);
-                                overflow: hidden;
-                                height: 26px;
-                                cursor: pointer; 
-                                transition: all 0.35s;
-                                font-size: 14px;
-                                background-color: #8C7B69;
-                                color: #F9F6F3;
-                                padding: 0px 5px;
-                                border-radius: 8px;
-                                border: 3px solid #E9CF7F;
-                                z-index: 999;
-                                box-sizing: border-box;
-                                width: 100px;
-
-                                div {
-                                    box-sizing: border-box;
-                                    height: 20px;
-                                    padding: 0px 5px;
-                                }
-                                ul > li {
-                                    box-sizing: border-box;
-                                    height: 20px;
-                                    margin: 5px 0;
-                                    button {
-                                        font-size: 14px;
-                                        background: #766553;
-                                        color: #EBE0CB;
-                                        padding: 0px 5px;
-                                    }
-                                    button:hover {
-                                        cursor: pointer;
-                                        background-color: #EBE0CB;
-                                        color: #766E66;
-                                        font-weight: bolder;
-                                    }
-                                }
-                                // 11.28 更改按钮样式
-                                .active {
-                                    font-weight: 700;
-                                    color: #F67D60;
-                                }
-                            }
-                            // .mode-wrap,
-                            .start,
-                            .back {
-                                @include default-button();
-                                width: 100%;
-                                font-size: 16px;
-                                display: block;
-                                margin-top: 15px;
-                            }
                         }
                     }
                 
                 }
-
                 .score-wrap {
-                    width: 100%;
-                    height: 30%;
-                    position: absolute;
-                    bottom: 0;
-                    display: flex;
-                    justify-content: space-around;
-                    
 
                     .classic-wrap {
-                        // position: absolute;
-                        border: 3px solid #E9CF7F;
-                        border-radius: 8px;
-                        // top: 40px;
-                        text-align: center;
                         font-size: 2rem;
                         padding: 0.5rem;
                         min-width: 8rem;
-
-                        p:nth-child(1) {
-                            border-bottom: 1px solid #E9CF7F;
-                            padding-bottom: 0.5rem;
-                        }
-                    }
-                    .score {
-                        color: #EDCD61;
-                    }
-                    .best-score {
-                        color: #ffbb55
-                    }
-                    .timer-wrap {
-                        color: #F65E3B;
                     }
                 }
             }
-            .game-wrapper {
-                position: relative;
-                height: 60%;
-                width: 100%;
-                // max-height: 439.19px;
-                // max-width: 466px;
-                .game {
-                    // width: 95%;
-                    position: absolute;
-                    bottom: 4vh;
-                    left: calc(15vw / 2);
-                }
-            }
-            // .result-wrap {
-            //     @include position-center();
-            //     width: 200px;
-            //     height: 200px;
-            //     border: 1px solid black;
-            //     background-color: rgba(0,0,0,0.5);
-            //     z-index:10000;
-            //     color: #fff;
-            // }
         }
     }
 }
 
 @media only screen and (min-width: 466px){
-    @mixin default-button () {
-        // width: 100%;
-        // height: 45px;
-        // line-height: 45px;
-        font-size: 24px;
-        background-color: #8C7B69;
-        color: #F9F6F3;
-        border-radius:10px;
-        border-width: 0;
-        // margin: 20px 0;
-    }
-    @mixin position-center () {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-    }
     .singel-wrapper {
-        width: 100%;
-        height: 100%;
-        position: relative;
-
         .all-wrapper {
             width: 466px;
             height: 789px;
             margin: auto;
-            position: position;
-            
+
             .btn-wrapper {
-                position: relative;
-                height: 40%;
 
                 .title-func-wrapper {
-                    position: absolute;
-                    width: 100%;
-                    height: 70%;
-                    top: 0;
 
                     .title-wrapper {
-                        position: absolute;
-                        height: 100%;
-                        width: 50%;
-                        left: 0;
+
                         .title {
-                            position: absolute;
                             width: 100px;
                             height: 100px;
                             line-height: 100px;
-                            font-weight: 700;
                             font-size: 40px;
-                            border: 3px solid #E9CF7F;
-                            border-radius: 1rem;
-                            right: 5vh;
-                            bottom: 5vh;
-                            box-sizing: border-box;
-                            cursor: pointer;
-
-                            span:nth-child(1) {
-                                color: #F59563;
-                            }
-                            span:nth-child(2) {
-                                color: #F65E3B;
-                            }
-                            span:nth-child(3) {
-                                color: #EDCD61;
-                            }
-                            span:nth-child(4) {
-                                color: rgb(255, 187, 85);
+                            right: 26%;
+                            bottom: 18%;
+                            .skin-tip {
+                                left: 50px;
                             }
                         }
                     }
-
                     .func-wrapper {
-                        position: absolute;
-                        height: 100%;
-                        width: 50%;
-                        right: 0;
                         .func-btn-wrap {
-                            position: absolute;
-                            left: 5vh;
-                            bottom: 5vh;
-                            width: 100px;
-                            height: 100px;
-                            // display: flex;
-                            // align-items: space-between;
-                            text-align: center;
-
-                            .mode-wrap:hover{
-                                height: 100px;
-                                position: absolute;
-                            }
-                            .mode-wrap > div::before {
-                                content: '';
-                                display: inline-block;
-                                width: 0;
-                                height: 0;
-                                border: 5px solid #766E66;
-                                border-color: transparent transparent transparent #F67D60;
-                            }
-                            .mode-wrap {
-                                // position: absolute;
-                                // top: 0;
-                                // right: calc(15vw / 2);
-                                overflow: hidden;
-                                height: 26px;
-                                cursor: pointer; 
-                                transition: all 0.35s;
-                                font-size: 14px;
-                                background-color: #8C7B69;
-                                color: #F9F6F3;
-                                padding: 0px 5px;
-                                border-radius: 8px;
-                                border: 3px solid #E9CF7F;
-                                z-index: 999;
-                                box-sizing: border-box;
-                                width: 100px;
-
-                                div {
-                                    box-sizing: border-box;
-                                    height: 20px;
-                                    padding: 0px 5px;
-                                }
-                                ul > li {
-                                    box-sizing: border-box;
-                                    height: 20px;
-                                    margin: 5px 0;
-                                    button {
-                                        font-size: 14px;
-                                        background: #766553;
-                                        color: #EBE0CB;
-                                        padding: 0px 5px;
-                                    }
-                                    button:hover {
-                                        cursor: pointer;
-                                        background-color: #EBE0CB;
-                                        color: #766E66;
-                                        font-weight: bolder;
-                                    }
-                                }
-                                // 11.28 更改按钮样式
-                                .active {
-                                    font-weight: 700;
-                                    color: #F67D60;
-                                }
-                            }
-                            // .mode-wrap,
-                            .start,
-                            .back {
-                                @include default-button();
-                                width: 100%;
-                                font-size: 16px;
-                                display: block;
-                                margin-top: 15px;
-                            }
+                            left: 26%;
+                            bottom: 18%;
                         }
                     }
                 
                 }
-
                 .score-wrap {
-                    width: 100%;
-                    height: 30%;
-                    position: absolute;
-                    bottom: 0;
-                    display: flex;
-                    justify-content: space-around;
-                    
 
                     .classic-wrap {
-                        // position: absolute;
-                        border: 3px solid #E9CF7F;
-                        border-radius: 8px;
-                        // top: 40px;
-                        min-width: 4em;
-                        text-align: center;
                         font-size: 24px;
                         padding: 5px;
-
-                        p:nth-child(1) {
-                            border-bottom: 1px solid #E9CF7F;
-                            padding-bottom: 5px;
-                        }
-                    }
-                    .score {
-                        color: #EDCD61;
-                    }
-                    .best-score {
-                        color: #ffbb55
-                    }
-                    .timer-wrap {
-                        color: #F65E3B;
+                        min-width: 4em;
                     }
                 }
             }
-            .game-wrapper {
-                position: relative;
-                height: 60%;
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-            // .result-wrap {
-            //     @include position-center();
-            //     width: 200px;
-            //     height: 200px;
-            //     border: 1px solid black;
-            //     background-color: rgba(0,0,0,0.5);
-            //     z-index:10000;
-            //     color: #fff;
-            // }
         }
     }
 }
