@@ -190,7 +190,6 @@ export default {
       }
     },
     move (direction) {
-      if(this.type == 2) this.speedMode()
       switch (direction) {
         case 'left':
           if (canMoveLeft(this.point)) {
@@ -427,6 +426,7 @@ export default {
       }
     },
     interval () {
+      if(this.type == 2) this.speedMode()
       setTimeout(() => {
         this.freshGrid()
       }, 220) 
