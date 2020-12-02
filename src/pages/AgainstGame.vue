@@ -91,7 +91,7 @@
                         </div>
                     </div>
                 </transition>
-                <div class="player2">
+                <div class="player2" @click="showsuc()">
                     <div class="picture">
                         <div class="character">{{character === 1 ? '房主' : '房客'}}</div>
                         <div class="avatarMy">
@@ -925,22 +925,29 @@ export default {
     }
     .button-score{
         height: 80px;
+        float: none;
+        width: 80%;
+        margin-left: 10%;
+    }
+    .buttonGroup,.score-wrap{
+        width: 250px;
+        margin-left: 8%;
     }
     .playerTop{
         width: 85%;
         height: 140%;
         margin-top: 2%;
         margin-left: 7.5%;
-        margin-bottom: 3.5%;
+        margin-bottom: 3%;
     }
     .player1,.player2{
         width: 30%;
         height: 100%;
         .avatarOpponent{
-            height: 80%;
+            height: 75%;
         }
         .avatarMy{
-            height: 80%;
+            height: 75%;
         }
         .picture{
             height: 80%;
@@ -956,11 +963,12 @@ export default {
     .playerDown{
         width:85%;
         height: 14%;
-        margin-top: 3.5%;
+        margin-top: 3%;
         margin-left: 7.5%;
     }
     .messageMy{
         width: 70%;
+        height: 100%;
     }
     .commentMy{
         margin-top: 10%;
@@ -982,4 +990,25 @@ export default {
         top: -80%;
     }
 }
+@media only screen and (max-width: 320px) {
+    .Top{
+        margin-top: 2%;
+    }
+    .buttonGroup,.score-wrap{
+        margin-left: 1%;
+    }
+    .playerTop{
+        height: 135%;
+    }
+    .playerDown{
+        height: 13.5%
+    }
+    .inputMy{
+        margin-left: 2%;
+    }
+    .buttonInput{
+        margin-left: 1.5%;
+    }
+}
+
 </style>
