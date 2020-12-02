@@ -15,7 +15,7 @@
                     <div class="buttonGroup">
                         <button class="start" :class="{'isdisabled': !isReady}" @click="startGame" :disabled="!isReady" v-if="character === 1 && inited == true && isStart == false">开始游戏</button>
                         <button class="back" @click="leaveRoom">退出房间</button>
-                        <div class="mode-wrap" v-if="character === 1">
+                        <div class="mode-wrap" v-if="character === 1" @mouseover="hiddenMyscore()" @mouseout="showMyscore()" >
                             <div>难度设置</div>
                             <ul>
                                 <li v-for="(item, index) in modeItem" :key="item.mode">
@@ -25,7 +25,7 @@
                         </div>
                     </div>
                     <div class="score-wrap">
-                        <div class="classic-wrap my-score">
+                        <div class="classic-wrap my-score" id="myScore">
                             <p>我的分数</p>
                             <p v-if="inited">{{this.$refs.gameboard.myScore}}</p>
                         </div>
@@ -83,6 +83,14 @@
             -->
 
             <div class="playerDown">
+                <!-- 互动动画 -->
+                <transition name="showSuc">
+                    <div v-show="sucShow" class="sucSyn">
+                        <div class="sucSynText">
+                            <p>2048!</p>
+                        </div>
+                    </div>
+                </transition>
                 <div class="player2">
                     <div class="picture">
                         <div class="character">{{character === 1 ? '房主' : '房客'}}</div>
@@ -154,6 +162,7 @@ export default {
             myScore: 0,
             yourScore: 0,
             limitTime: 10,
+            sucShow: false, //互动动画
             isStart: false, //点击开始游戏，载入游戏前变为true
             isReady: false, //房内有两人后变为true
             emojis: ['😂', '😄', '😏', '😅' ,'🤓', '😎', '👿', '😤', '😭', '👻', '👍', '✌️', '❤️'],
@@ -187,7 +196,7 @@ export default {
         // this.myScore = this.$route.params.myScore
         // this.yourScore = this.$route.params.mateScore
         this.inited = true
-        this.oTextarea = document.querySelector('input');
+        // this.oTextarea = document.querySelector('input');
 
         //发送信号加入房间
         socket.emit('joinRoom',
@@ -364,7 +373,21 @@ export default {
         },
         initchangeScore() {
             this.changeScore = 0
+        },
+        closesuc(){
+            this.sucShow = false;
+        },
+        showsuc(){
+            this.sucShow = true;
+            window.setTimeout(this.closesuc,1000);
+        },
+        hiddenMyscore(){
+            myScore.style.zIndex = "-1";
+        },
+        showMyscore(){
+            myScore.style.zIndex = "1";
         }
+        
     }
 }
 </script>
@@ -395,7 +418,7 @@ export default {
 }
 .againstBody{
     width :750px;
-    height: 700px;
+    height: 800px;
     margin: 0 auto;
     padding-top: 100px;
 }
@@ -416,7 +439,9 @@ export default {
     }
 }
 .gameMode{
-    width: 120px;
+    position:absolute;
+    width: 30%;
+    left: 35%;
     text-align: center;
     margin: 0 auto;
     p{
@@ -429,6 +454,7 @@ export default {
     width: 750px;
     height: 100px;
     margin-top: 50px;
+    z-index: 100;
 }
 .button-score{
     float: right;
@@ -446,6 +472,7 @@ export default {
     @extend %default-button;
     width: 80px;
     height: 27px;
+    line-height: 21px;
     font-size: 1rem;
     display: inline;
     border-radius: 5px;
@@ -460,13 +487,14 @@ export default {
     @extend %default-button;
     width: 80px;
     height: 27px;
+    line-height: 21px;
     font-size: 1rem;
     display: inline;
     border-radius: 5px;
     border: 3px solid #E9CF7F;
 }
 .mode-wrap:hover{
-    height: 100px;
+    height: 90px;
 }
 .mode-wrap {
     overflow: hidden;
@@ -492,7 +520,7 @@ export default {
     ul > li {
         box-sizing: border-box;
         height: 20px;
-        margin: 5px 0;
+        margin: 3px 0;
         z-index: 100;
         button {
             font-size: 1rem;
@@ -543,7 +571,6 @@ export default {
 .my-score {
     width: 64px;
     position: absolute;
-    z-index: -1;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -593,7 +620,7 @@ export default {
     .picture {
         // box-sizing: border-box;
         width: 100%;
-        height: 79px;
+        height: 73px;
         .character{
             color:#E9CF7F;
             font-weight: 900;
@@ -691,11 +718,12 @@ export default {
     width: 400px;
     height: 100px;
     display: inline;
-    float: left; 
+    float: left;
+    z-index: 1; 
 }
 .commentOpp {
     position: relative;
-    width: 200px;
+    width: 250px;
     height: 50px;
     background: #8C7B69;
     border-radius: 5px;
@@ -716,7 +744,7 @@ export default {
     background:none;  
     outline:none;  
     border:none;
-    width: 100%;
+    width: 92%;
     margin-top: 5%;
     margin-left: 8%;
     height: 60%;
@@ -814,11 +842,54 @@ export default {
 .slide-bottom-leave-active {
   transition: all .2s ease;
 }
-.slide-bottom-enter, .slide-bottom-leave-active {
+.slide-bottom-enter {
+  transform: translateY(30px);
+  opacity: 0;
+}
+.slide-bottom-leave-active {
   transform: translateY(30px);
   opacity: 0;
 }
 
+
+.sucSyn{
+    position: absolute;
+    left: 650px;
+    bottom: 300px;
+    width: 100px;
+    height: 100px;
+    border-radius: 100px;
+    .sucSynText{
+        width: 100%;
+        height: 100%;
+        margin: 0 auto;
+        p{  
+            font-family: 'Audiowide';
+            line-height: 100px;
+            vertical-align: middle;
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            transition: all 1.5s ease;
+            text-shadow: 0 0 0.2em rgb(240, 226, 33),0 0 0.2em rgb(240, 226, 33);   
+            color:#d1d1d1;   
+        }
+    }
+}
+.showSuc-enter-active{
+    transition: all .3s ease;
+}
+.showSuc-leave-active{
+    transition: all .3s ease;
+}
+.showSuc-enter {
+    transform: translateY(30px);
+    opacity: 0;
+}
+.showSuc-leave-active{
+    transform: translateY(-30px);
+    opacity: 0;
+}
 @media screen and (max-height: 900px) {
     .abody{
         height: 900px;
@@ -840,10 +911,17 @@ export default {
         height: 100%;
         padding-top: 0px;
     }
+    .gameMode{
+        left:35%;
+        width:30%;
+        p{
+            font-size: 0.5rem;
+        }
+    }
     .Top{
         width: 100%;
         height: 10%;
-        margin-top: 3%;
+        margin-top: 4%;
     }
     .button-score{
         height: 80px;
@@ -851,12 +929,22 @@ export default {
     .playerTop{
         width: 85%;
         height: 140%;
+        margin-top: 2%;
         margin-left: 7.5%;
-        margin-bottom: 5%;
+        margin-bottom: 3.5%;
     }
     .player1,.player2{
         width: 30%;
         height: 100%;
+        .avatarOpponent{
+            height: 80%;
+        }
+        .avatarMy{
+            height: 80%;
+        }
+        .picture{
+            height: 80%;
+        }
     }
     .messageOpponent{
         width: 70%;
@@ -868,7 +956,7 @@ export default {
     .playerDown{
         width:85%;
         height: 14%;
-        margin-top: 5%;
+        margin-top: 3.5%;
         margin-left: 7.5%;
     }
     .messageMy{
