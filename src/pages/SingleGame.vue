@@ -297,6 +297,7 @@ $content-width: 55vw;
                             right: 5vh;
                             bottom: 5vh;
                             box-sizing: border-box;
+                            cursor: pointer;
 
                             span:nth-child(1) {
                                 color: #F59563;
@@ -517,6 +518,7 @@ $content-width: 55vw;
                             right: 5vh;
                             bottom: 5vh;
                             box-sizing: border-box;
+                            cursor: pointer;
 
                             span:nth-child(1) {
                                 color: #F59563;
