@@ -462,6 +462,7 @@ $typical-font: 2.4rem;
       max-height: 484.5px;
       min-width: 272px;
       min-height: 272px;
+      padding: calc(calc(100% - 4 * 18vw) / 5);
       padding: clamp(8.3px, calc(calc(100% - 4 * 18vw) / 5), 15.3px);
       border-radius: 1rem;
       display: flex;
@@ -492,8 +493,8 @@ $typical-font: 2.4rem;
       background-color: rgba(0,0,0,1);
       font-size: 3.5rem;
       font-weight: 700;
-      /* 文字居中 */
       text-align: center;
+      line-height: $cell-height;
       line-height: clamp(58px, $cell-height, 102px);
       // line-height: $cell-width;
       transition: background-color 0.18s ease-in-out, font-size 0.18s ease-in-out, transform 0.18s linear;
