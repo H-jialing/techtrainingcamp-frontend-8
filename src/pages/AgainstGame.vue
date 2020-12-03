@@ -3,8 +3,6 @@
         <div class="againstBody">
             <div class="roomName">
                 <p>房间号: {{roomId}}</p>
-            </div>
-            <div v-if="character === 0" class="gameMode">
                 <p>难度：{{modeItem[mode].mode}}</p>
             </div>
 
@@ -37,7 +35,7 @@
                             <div v-if="!isStart" class="limit-clock">
                                 <p>设置时间</p>
                                 <div>
-                                    <input v-if="character ===1 " v-model="limitTime" type="text">
+                                    <input v-if="character ===1 " v-model="limitTime" type="text" oninput = "value=value.replace(/[^\d]/g,'')">
                                     <div v-else> 
                                         <p class="limit-clock-p">{{limitTime}}</p> 
                                     </div>
@@ -70,14 +68,15 @@
 
             <!-- <div>等待对手。。。</div> -->
             <!-- 11.28 删除监听事件 -->
-            <GameBoard :level='mode' :type='1' 
-            :setTime='limitTime' :changeScore="changeScore"
-            @gameOver="gameOver" 
-            @newScore='sendScore'
-            @scoreChange="punishment"
-            @initchangeScore="initchangeScore"
-            class="game" ref="gameboard" />
-
+            <div class="game-wrap">
+                <GameBoard :level='mode' :type='1' 
+                :setTime='limitTime' :changeScore="changeScore"
+                @gameOver="gameOver" 
+                @newScore='sendScore'
+                @scoreChange="punishment"
+                @initchangeScore="initchangeScore"
+                class="game" ref="gameboard" />
+            </div>
             <!-- <Room /> -->
             <!-- 11.28 未做：在gameover和succes函数中控制游戏结果显示变量 
             -->
@@ -424,7 +423,7 @@ export default {
 }
 .roomName{
     width: 120px;
-    height: 30px;
+    height: 40px;
     text-align: center;
     background-color: #8C7B69;
     border-radius: 5px;
@@ -432,21 +431,9 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     p{
-        line-height: 30px;
+        line-height: 20px;
         font-weight: 600;
         color: #F9F6F3;
-        font-size: 1rem;
-    }
-}
-.gameMode{
-    position:absolute;
-    width: 30%;
-    left: 35%;
-    text-align: center;
-    margin: 0 auto;
-    p{
-        font-weight: 600;
-        color: #efdbaa;
         font-size: 1rem;
     }
 }
@@ -648,8 +635,12 @@ export default {
     display: inline;
     float: right;
 }
-.game {
-    margin: 0 auto;
+.game-wrap {
+    height: 60%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .result-mask {
     // z-index: 999;
@@ -901,7 +892,7 @@ export default {
     }
 }
 
-@media only screen and (max-width: 450px) {
+@media only screen and (max-width: 466px) {
     .abody{
         height: 100%;
         width: 100%;
@@ -911,12 +902,8 @@ export default {
         height: 100%;
         padding-top: 0px;
     }
-    .gameMode{
-        left:35%;
-        width:30%;
-        p{
-            font-size: 0.5rem;
-        }
+    .game-wrap{
+        height: 45%;
     }
     .Top{
         width: 100%;
@@ -986,8 +973,8 @@ export default {
         z-index: 1;
     }
     .emoji-display{
-        height:80%;
-        top: -80%;
+        height:40%;
+        top: -40%;
     }
 }
 @media only screen and (max-width: 320px) {
@@ -1005,6 +992,10 @@ export default {
     }
     .inputMy{
         margin-left: 2%;
+    }
+    .emoji-display{
+        height: 40%;
+        top: -40%;
     }
     .buttonInput{
         margin-left: 1.5%;
