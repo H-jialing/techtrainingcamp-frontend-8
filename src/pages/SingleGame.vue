@@ -1,8 +1,6 @@
 <template>
     <div class="singel-wrapper" :class="{'fancy-skin': isFancySkin}">
         <div class="all-wrapper">
-            
-            <!-- 11.28 开始游戏，已具备重新游戏的功能 -->
             <div class="btn-wrapper">
 
                 <div class="title-func-wrapper">
@@ -16,7 +14,6 @@
                     <div class="func-wrapper">
                         <div class="func-btn-wrap">
                             <div class="mode-wrap">
-                                <!-- <div>模式选择</div> -->
                                 <div v-if="![0,1,2].includes(type)">模式选择</div>
                                 <div v-else>{{modeItem[type].mode}}</div>
                                 <ul>
@@ -54,39 +51,22 @@
                     </div>
                 </div>
             </div>
-            <!-- 11.28 删除一些监听事件 -->
             <div class="game-wrapper">
                 <GameBoard :type="type" class="game" @gameOver="gameOver" ref="gameboard" />
             </div>
-            <!-- 11.28 未做：在gameover和succes函数中控制游戏结果显示变量 
-            -->
-            <div v-if="scoreShow" class="result-mask">
-                <div class="result-wrap">
-                    <div class="my-result-wrapper">
-
-                        <p class="result-title" v-if="this.$refs.gameboard.winFlag">Win!</p> 
-                        <p class="result-title">我的分数</p> 
-                        <p class="result-content">{{this.$refs.gameboard.myScore}}</p>
-
-                        <!-- <template v-if="type===2">
-                            <p class="result-title">用时</p>
-                            计时模式：获取游戏用时
-                            <p class="result-content">{{this.$refs.gameboard.time}}</p> 
-                        </template> -->
-                        <!-- 12.1 修改为限时模式下显示
-                        <template v-if="type===1">
-                            <p class="result-title">用时</p>
-                            计时模式：获取游戏用时
-                            ?????? 这里没有暴露参数，所以只能手动调节
-                            <p class="result-content">{{200-this.$refs.gameboard.time}}</p> 
-                        </template> -->
-                        <div>
-                            <button class="back" @click="() => scoreShow = false">返回</button>
-                        </div>
+        </div>
+        <div v-if="scoreShow" class="result-mask">
+            <div class="result-wrap">
+                <div class="my-result-wrapper">
+                    <p class="result-title" v-if="this.$refs.gameboard.winFlag">Win!</p> 
+                    <p class="result-title">我的分数</p> 
+                    <p class="result-content">{{this.$refs.gameboard.myScore}}</p>
+                    <div>
+                        <button class="back" @click="() => scoreShow = false">返回</button>
                     </div>
                 </div>
-            </div>    
-        </div>
+            </div>
+        </div>    
     </div>
 </template>
 
@@ -114,15 +94,9 @@ export default {
                     isModeActive: false
                 }
             ],
-            // 11.28 用不到的变量
-            // score: 0,
-            bestScore: 0,
-            // limitTime: 0,
-            // clockTime: 0,
+            bestScore: localStorage.getItem('bestScore') || 0,
             isGameover: true,
-            // 11.28 不能在一开始就展示分数，否则 this.$ref 取不到
             scoreShow: false,
-            // 11.28 新增变量
             type: 0,
             inited: false,
             isFancySkin: false,
@@ -130,13 +104,7 @@ export default {
         }
     },
     mounted() {
-      // 11.28 这里 params是空对象
-        // this.score = this.$route.params.myScore
-        console.log(this.$refs)
         this.inited = true
-        // this.score = this.$refs.gameboard.myScore
-        // this.limitTime = this.$refs.gameboard.time
-        // this.clockTime = this.$refs.gameboard.count
     },
     methods: {
         modeClick (index) {
@@ -154,8 +122,16 @@ export default {
             this.$refs.gameboard.init()
         }, 
         gameOver () {
-          // 11.28 加上游戏结束动画／弹窗
             this.scoreShow = true
+            this.setBestScore()
+        },
+        setBestScore () {
+            let curScore = this.$refs.gameboard.myScore
+            let oldScore = (localStorage.getItem('bestScore')) || 0
+            if (curScore > Number(oldScore)) {
+                localStorage.setItem('bestScore', curScore)
+                this.bestScore = curScore
+            }
         }
     }
 }
@@ -179,60 +155,6 @@ $content-width: 55vw;
 %content-wrap {
     background-color: rgba(0,0,0,0.5);
     border-radius: 1rem;
-}
-
-.result-mask {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.6);
-
-    .result-wrap {
-        @extend %position-center;
-        width: $content-width;
-        text-align: center;
-
-        .my-result-wrapper {
-            padding: 3%;
-            font-size: 2rem;
-            color: #EBE0CB;
-            font-weight: bold;
-            font-style: italic;
-            background-color: rgba(255,255,255,0.2);
-            box-shadow: 2px 3px 28px 16px;
-            border-radius: 1rem;
-
-            .result-title {
-                border-bottom: 0.1rem solid #efdbaa;
-                padding: 3%;
-                margin-bottom: 3%;
-                @extend %content-wrap;
-            }
-            .result-content {
-                @extend %content-wrap;
-            }
-            .result-content {
-                margin-bottom: 3%; 
-            }
-
-            .back {
-                background: transparent;
-                color: #b4a799;
-                margin: 10px;
-                font-size: 16px;
-            }
-            .back::before {
-                content: '';
-                display: inline-block;
-                width: 0;
-                height: 0;
-                border: 5px solid #b4a799;
-                border-color: transparent transparent transparent #766E66;
-            }
-        }
-    }
 }
 
 .singel-wrapper {
@@ -411,6 +333,60 @@ $content-width: 55vw;
             display: flex;
             justify-content: center;
             align-items: center;
+        }
+    }
+
+    .result-mask {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.6);
+
+        .result-wrap {
+            @extend %position-center;
+            width: $content-width;
+            text-align: center;
+
+            .my-result-wrapper {
+                padding: 3%;
+                font-size: 2rem;
+                color: #EBE0CB;
+                font-weight: bold;
+                font-style: italic;
+                background-color: rgba(255,255,255,0.2);
+                box-shadow: 2px 3px 28px 16px;
+                border-radius: 1rem;
+
+                .result-title {
+                    border-bottom: 0.1rem solid #efdbaa;
+                    padding: 3%;
+                    margin-bottom: 3%;
+                    @extend %content-wrap;
+                }
+                .result-content {
+                    @extend %content-wrap;
+                }
+                .result-content {
+                    margin-bottom: 3%; 
+                }
+
+                .back {
+                    background: transparent;
+                    color: #b4a799;
+                    margin: 10px;
+                    font-size: 16px;
+                }
+                .back::before {
+                    content: '';
+                    display: inline-block;
+                    width: 0;
+                    height: 0;
+                    border: 5px solid #b4a799;
+                    border-color: transparent transparent transparent #766E66;
+                }
+            }
         }
     }
 }
