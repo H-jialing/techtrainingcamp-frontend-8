@@ -147,7 +147,7 @@ import { alert, closewin } from '../assets/utils'
 import GameBoard from '../components/Gameboard'
 import io from 'socket.io-client'
 // 建立socket.io通信
-const socket = io.connect('http://127.0.0.1:8081')
+const socket = io.connect('http://47.110.94.236')
 
 export default {
     components: {
