@@ -568,8 +568,12 @@ $typical-font: 2.4rem;
       min-width: 272px;
       min-height: 272px;
       padding: 9px;
-      padding: calc(calc(100% - 4 * 18vw) / 5);
-      padding: clamp(8.3px, calc(calc(100% - 4 * 18vw) / 5), 15.3px);
+      @supports (padding: calc(calc(100% - 4 * 18vw) / 5)) {
+        padding: calc(calc(100% - 4 * 18vw) / 5);
+      }
+      @supports (padding: clamp(8.3px, calc(calc(100% - 4 * 18vw) / 5), 15.3px)) {
+        padding: clamp(8.3px, calc(calc(100% - 4 * 18vw) / 5), 15.3px);
+      }
       border-radius: 1rem;
     }
     .cell {
@@ -582,7 +586,9 @@ $typical-font: 2.4rem;
       border-radius: 1rem;
       font-size: 3.5rem;
       line-height: $cell-height;
-      line-height: clamp(58px, $cell-height, 102px);
+      @supports (line-height: clamp(58px, $cell-height, 102px)) {
+        line-height: clamp(58px, $cell-height, 102px);
+      }
     }
     .number-cell {
       width: $cell-width;
