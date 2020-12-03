@@ -14,8 +14,10 @@ Vue + Node.js + Socket.io
 
 ## 部分游戏页面
 
-（）
-
+<img src="./src/assets/img/readme1.png" alt="单机模式游戏截图1" style="width:200px;" />
+<img src="./src/assets/img/readme2.png" alt="单机模式游戏截图2" style="width:200px;" />
+<img src="./src/assets/img/readme3.png" alt="对战模式游戏截图1" style="width:200px;" />
+<img src="./src/assets/img/readme4.png" alt="对战模式游戏截图2" style="width:200px;" />
 
 ## 本地环境配置
 
