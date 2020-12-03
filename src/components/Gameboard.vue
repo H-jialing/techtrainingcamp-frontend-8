@@ -47,7 +47,7 @@ export default {
       myScore: 0,
       scoreChange: 0,
       // 计时变量，设置计时时间
-      time: 200,
+      time: 5,
       // 保存定时器
       timer: null,
       reg: new RegExp(' trans-scale'),
@@ -61,7 +61,9 @@ export default {
       keyEvent: null,
       rich: 0,
       winFlag: false,
-      pointMap: null
+      pointMap: null,
+      total: 0,
+      totalTime: null
     }
   },
   // 钩子函数
@@ -83,7 +85,18 @@ export default {
           this.timer = setInterval(() => {
             this.time = this.time - 1
           }, 1000)
+        } else {
+          if(this.point.length > 0) {
+            clearPoint(this.point, this.anima)
+            this.freshGrid()
+            this.total = 0
+            this.time = 200
+            this.count = 5
+            
+          }
+          this.clearTime()
         }
+        this.isStart = false
       }
     },
     myScore: {
@@ -113,10 +126,11 @@ export default {
     },
     time: {
       handler(time) {
-        if(time <= 0 && this.isStart) {
+        if(time <= 0) {
           this.$emit('gameOver')
           this.removeEvent()
           clearInterval(this.timer)
+          clearInterval(this.totalTime)
           // ------ 这里考虑如何对比两个人的分数
           // 显示胜利／失败
           // ======= 添加动画
@@ -137,8 +151,7 @@ export default {
         this.count--
         if(this.count == 0) {
           // 最后记得清除定时器，否则就算是服输也会一直计时
-          clearInterval(this.timeOut)
-          if(this.timer) clearInterval(this.timer)
+          this.clearTime()
           // ======== 游戏结束弹窗／动画
           this.$emit("gameOver")
           this.removeEvent()
@@ -148,20 +161,22 @@ export default {
     init () {
       this.isStart = true
       this.winFlag = false
-      // 所有归零
       this.pointMap = new Map()
+
+      this.clearTime()
+      this.totalTime = setInterval(() => {
+        this.total += 1
+      }, 1000)
 
       document.addEventListener("touchstart",  this.touchEvent, { passive: false })
       document.addEventListener("touchend", this.touchEvent, { passive: false })  
       document.addEventListener("touchmove", this.touchEvent, { passive: false }) 
       document.addEventListener("keydown", this.keyEvent, { passive: false })
       if(this.setTime) this.time = this.setTime * 60
+      // else this.time = 200
 
       clearPoint(this.point, this.anima)
-      // numberInit(this.point, this.numberRef)
       this.freshGrid()
-      // ----- 设置计时时间
-      // this.time = 600000
       this.myScore = 0
 
       var x1 = getRandom()
@@ -190,6 +205,7 @@ export default {
       }
     },
     move (direction) {
+      if(this.isStart) this.isStart = false
       switch (direction) {
         case 'left':
           if (canMoveLeft(this.point)) {
@@ -410,16 +426,15 @@ export default {
       }
       if(this.winFlag) {
         this.$emit('gameOver')
-        if(this.timer) clearInterval(this.timer)
-        if(this.timeout) clearInterval(this.timeout)
+        this.clearTime()
         this.removeEvent()
       }
     },
     isGameOver () {
       if(!canMoveLeft(this.point) && !canMoveRight(this.point) && !canMoveUp(this.point) && !canMoveDown(this.point)) {
+        this.isStart = false
         this.$emit("gameOver")
-        if(this.timer) clearInterval(this.timer)
-        if(this.timeout) clearInterval(this.timeout)
+        this.clearTime()
         this.removeEvent()
         // ====== 增加 游戏结束 动画
         // ------- 对战模式下，通知对方对战已结束，判定对方胜利
@@ -440,6 +455,11 @@ export default {
       document.removeEventListener("touchend", this.touchEvent, { passive: false })
       document.removeEventListener("touchmove", this.touchEvent, { passive: false })  
       document.removeEventListener("keydown", this.keyEvent, { passive: false }) 
+    },
+    clearTime () {
+      if(this.timer) clearInterval(this.timer)
+      if(this.timeOut) clearInterval(this.timeOut)
+      if(this.totalTime) clearInterval(this.totalTime)
     }
   }
 }

@@ -61,6 +61,8 @@
                     <p class="result-title" v-if="this.$refs.gameboard.winFlag">Win!</p> 
                     <p class="result-title">我的分数</p> 
                     <p class="result-content">{{this.$refs.gameboard.myScore}}</p>
+                    <p class="result-title">用时</p> 
+                    <p class="result-content">{{this.$refs.gameboard.total}}</p>
                     <div>
                         <button class="back" @click="() => scoreShow = false">返回</button>
                     </div>
