@@ -12,7 +12,7 @@
         <transition name="slide-fade">
             <div class="pop-up" v-show="dialog" key="fade">
                 <div class="pop-wrap">
-                    <input class="menu-input"  v-model="nickName" placeholder="请输入个人昵称">
+                    <input class="menu-input" v-model="nickName" placeholder="请输入个人昵称">
                     <input class="menu-input" v-model="roomId" placeholder="请输入房间名">
                     <div class="menu-btn-wrap">
                         <button class="menu-btn" :class="{'clickable': clickable}" @click="enterRoom">确定</button>
@@ -26,11 +26,13 @@
             <div class="pop-up" v-show="showAbout" key="fade2">
                 <div class="pop-wrap show-about-wrap">
                     <div class="text-wrap">
-                        <p class="about-title">小组成员：</p>
-                        <p class="about-content">{{member}}</p>
-                        <p class="about-title">职责：</p>
-                        <template v-for="item of memberInfo">
-                            <p class="about-content" :key="item.member">{{item.member}}: {{item.info}}</p>
+                        <template v-for="item of aboutInfo">
+                            <div :key="item.title">
+                                <p class="about-title">{{item.title}}</p>
+                                <template v-for="value of item.content">
+                                    <p class="about-content" :key="value">{{value}}</p>
+                                </template>
+                            </div>
                         </template>
                     </div>
                     <button class="about-btn" @click="() => showAbout = false">返回</button>
@@ -50,23 +52,17 @@ export default {
             roomId: '',
             dialog: false,
             showAbout: false,
-            member: '谭惟予、张开心、赵文涵、黄佳玲',
-            memberInfo: [
+            aboutInfo: [
                 {
-                    member: '谭惟予',
-                    info: '把控项目进度、游戏后台开发'
+                    title: '小组成员：',
+                    content: ['谭惟予、张开心、赵文涵、黄佳玲']
                 },
                 {
-                    member: '张开心',
-                    info: '游戏逻辑实现、游戏动画开发'
-                },
-                {
-                    member: '赵文涵',
-                    info: '聊天、消息弹框、页面样式开发'
-                },
-                {
-                    member: '黄佳玲',
-                    info: '框架搭建、页面样式设计与开发'
+                    title: '游戏介绍：',
+                    content: [
+                        '2048是一款风靡全球的经典小游戏，最初的开发者是20岁的Gabriele Cirulli。初衷就是觉得好玩，在将其开源版本放到Github上后，意外走红。这款游戏的玩法很简单，每次可以选择上下左右滑动，每滑动一次，所有的数字方块都会往滑动的方向靠拢，系统也会在空白的地方乱数出现一个数字方块，相同数字的方块在靠拢、相撞时会相加。不断的叠加最终拼凑出2048这个数字就算成功。',
+                        '本项目在经典2048小游戏基础上，又增加了限时模式、速度模式，同时还具备双人对战模式，满足不同场景下的娱乐需求。话不多说，赶紧试玩一下吧~'
+                    ]
                 }
             ]
         }

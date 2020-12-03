@@ -6,13 +6,13 @@ import router from './router'
 import axios from 'axios'
 import moment from 'moment'
 import store from './store'
+import './styles/variables.scss';
+import './styles/base.scss';
 
 Vue.config.productionTip = false
 
 Vue.prototype.axios = axios
 Vue.prototype.moment = moment
-
-
 
 /* eslint-disable no-new */
 new Vue({
