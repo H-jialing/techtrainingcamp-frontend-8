@@ -27,12 +27,11 @@
                 <div class="pop-wrap show-about-wrap">
                     <div class="text-wrap">
                         <p class="about-title">小组成员：</p>
-                        <p class="about-content">jkhllfkjalkljal</p>
+                        <p class="about-content">{{member}}</p>
                         <p class="about-title">职责：</p>
-                        <p class="about-content">jlakjfdf</p>
-                        <p class="about-content">kfjlajfafjlf</p>
-                        <p class="about-content">kjdnflajflfjsa</p>
-                        <p class="about-content">kjdnflajflfjsa</p>
+                        <template v-for="item of memberInfo">
+                            <p class="about-content" :key="item.member">{{item.member}}: {{item.info}}</p>
+                        </template>
                     </div>
                     <button class="about-btn" @click="() => showAbout = false">返回</button>
                 </div>
@@ -50,7 +49,26 @@ export default {
             nickName:'',
             roomId: '',
             dialog: false,
-            showAbout: false
+            showAbout: false,
+            member: '谭惟予、张开心、赵文涵、黄佳玲',
+            memberInfo: [
+                {
+                    member: '谭惟予',
+                    info: '把控项目进度、游戏后台开发'
+                },
+                {
+                    member: '张开心',
+                    info: '游戏逻辑实现、游戏动画开发'
+                },
+                {
+                    member: '赵文涵',
+                    info: '聊天、消息弹框、页面样式开发'
+                },
+                {
+                    member: '黄佳玲',
+                    info: '框架搭建、页面样式设计与开发'
+                }
+            ]
         }
     },
     methods: {
@@ -104,6 +122,14 @@ $content-width: 40vw;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+}
+%triangle-tip {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border: 5px solid #bcae9f;
+    border-color: transparent transparent transparent #bcae9f;
 }
 .wrapper {
     position: fixed;
@@ -166,7 +192,7 @@ $content-width: 40vw;
     }
 
     .show-about-wrap {
-        font-size: 20px;
+        font-size: 2rem;
         color: #EBE0CB;
         font-weight: bold;
         font-style: italic;
@@ -216,6 +242,13 @@ $content-width: 40vw;
             padding: 5px;
             margin-bottom: 10px;
         }
+        .about-content {
+            font-size: 1rem;
+            font-weight: normal;
+        }
+        .about-content::before {
+            @extend %triangle-tip;
+        }
     }
     .about-btn {
         float: right;
@@ -225,12 +258,7 @@ $content-width: 40vw;
         font-size: 1.3rem;
     }
     .about-btn::before {
-        content: '';
-        display: inline-block;
-        width: 0;
-        height: 0;
-        border: 5px solid #bcae9f;
-        border-color: transparent transparent transparent #bcae9f;
+        @extend %triangle-tip;
     }
 }
 
