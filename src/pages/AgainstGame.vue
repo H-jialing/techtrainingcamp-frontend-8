@@ -135,7 +135,8 @@ import { alert, closewin } from '../assets/utils'
 import GameBoard from '../components/Gameboard'
 import io from 'socket.io-client'
 // 建立socket.io通信
-const socket = io.connect('http://47.110.94.236')
+// const socket = io.connect('http://47.110.94.236')
+const socket = io.connect('http://127.0.0.1:8081')
 
 export default {
     components: {
@@ -289,7 +290,14 @@ export default {
     created() {
         //从vuex中拿到用户昵称和房间id
         this.myName = this.$store.state.nickName   
-        this.roomId = this.$store.state.roomId  
+        this.roomId = this.$store.state.roomId
+        //全局监听enter事件
+        document.onkeydown = (e) => {
+            let key = window.event.keyCode;
+            if (key == 13) {
+                this.sendMsg();
+            }
+        };   
     },
     watch: {
         limitTime: {
@@ -396,9 +404,9 @@ export default {
     background-repeat: repeat;
     .againstBody{
         width :750px;
-        height: 800px;
+        height: 750px;
         margin: 0 auto;
-        padding-top: 100px;
+        padding-top: 50px;
         .roomName{
             width: 120px;
             height: 40px;
@@ -418,7 +426,7 @@ export default {
         .Top{
             width: 750px;
             height: 100px;
-            margin-top: 50px;
+            margin-top: 30px;
             z-index: 100;
             .button-score{
                 float: right;
@@ -454,6 +462,7 @@ export default {
                         display: inline;
                         border-radius: 5px;
                         border: 3px solid #E9CF7F;
+                        margin-left: 1px;
                     }
                     .mode-wrap:hover{
                         height: 90px;
@@ -504,7 +513,7 @@ export default {
                 }
                 .score-wrap{
                     width: 250px;
-                    height: 45px;
+                    height: 59px;
 
                     .limit-clock,
                     .clock,
@@ -515,8 +524,10 @@ export default {
                         padding: 5px;
                     }
                     .timer-wrap{
-                        width: 100%;
-                        height: 100%;
+                        width: 80px;
+                        height: 59px;
+                        position: absolute;
+                        margin-left: 170px;
                         .limit-clock-p{
                         border-bottom:0px;
                         padding-bottom:0rem;
@@ -547,7 +558,6 @@ export default {
                     .limit-clock {
                         width: 64px;
                         position: absolute;
-                        margin-left: 170px;
                         input {
                             width: 70px;
                             text-align: center;
@@ -621,11 +631,10 @@ export default {
             position: relative;
             width: 750px;
             height: 100px;
-            margin-top: 50px;
             .sucSyn{
                 position: absolute;
                 left: 650px;
-                bottom: 300px;
+                bottom: 270px;
                 width: 100px;
                 height: 100px;
                 border-radius: 100px;
@@ -872,7 +881,7 @@ export default {
         width: 750px;
     }
 }
-@media only screen and (max-width: 466px) {
+@media only screen and (min-width: 330px) and (max-width: 466px) {
     .abody{
         height: 100%;
         width: 100%;
@@ -880,109 +889,261 @@ export default {
             width: 100%;
             height: 100%;
             padding-top: 0px;
+            .roomName{
+                width: 30vw;
+                margin-left: 35vw;
+            }
             .Top{
-                width: 100%;
-                height: 10%;
-                margin-top: 4%;
+                width: 100vw;
+                height: 25vh;
+                margin-top: 1vh;
                 .button-score{
-                    height: 80px;
+                    height: 11vh;
                     float: none;
-                    width: 80%;
-                    margin-left: 10%;
-                    .buttonGroup,
+                    width: 80vw;
+                    margin-left: 10vw;
+                    .buttonGroup{
+                        width: 72vw;
+                        margin-left: 4vw;
+                        .start,.back{
+                            width: 22vw;
+                        }
+                        .mode-wrap{
+                            width: 20.5vw;
+                        }
+                        .back{
+                            margin-left: 2px;
+                        }
+                    }
                     .score-wrap{
-                        width: 250px;
-                        margin-left: 8%;
+                        width: 90%;
+                        height: 7.5vh;
+                        margin-left: 5%;
+                        .timer-wrap{
+                            width: 21.5vw;
+                            height: 7.5vh;
+                        }
+                        .my-score{
+                            width: 18vw;
+                        }
+                        .your-score{
+                            width: 18vw;
+                        }
+                        .limit-clock{
+                            width: 18vw;
+                        }
+                        .your-score{
+                            margin-left: 23.25vw;
+                        }
+                        .timer-wrap{
+                            margin-left: 46.5vw;
+                        }
                     }
                 }
                 .playerTop{
-                    width: 85%;
-                    height: 140%;
-                    margin-top: 2%;
-                    margin-left: 7.5%;
-                    margin-bottom: 3%;
+                    width: 85vw;
+                    height: 12vh;
+                    margin-top: 1vh;
+                    margin-left: 7.5vw;
+                    margin-bottom: 3.5vh;
+                    .player1{
+                        margin-top: 1vh;
+                        width: 21vw;
+                        height: 21vw;
+                        .picture{
+                            height: 80%;
+                        }
+                        .avatarOpponent{
+                            height: 75%;
+                        }    
+                    }
                     .messageOpponent{
-                        width: 70%;
+                        height: 21vw;
+                        width: 64vw;
+                        margin-top: 1vh;
                         .commentOpp{
-                            width: 90%;
-                            margin-top: 10%;
+                            width: 57vw;
+                            margin-top: 2.5vh;
                         }
                     }
                 }
             }
             .game-wrap{
-                height: 45%;
+                height: 45vh;
             }
             .playerDown{
-                width:85%;
-                height: 14%;
-                margin-top: 3%;
-                margin-left: 7.5%;
+                width:85vw;
+                height: 12vh;
+                margin-top: 3vh;
+                margin-left: 7.5vw;
+                .player2{
+                    width: 21vw;
+                    height: 21vw;
+                    .picture{
+                        height: 80%;
+                    }
+                    .avatarMy{
+                        height: 75%;
+                    }
+                }
                 .messageMy{
-                    width: 70%;
+                    width: 64vw;
                     height: 100%;
                     .commentMy:before{
-                        z-index: 0;
+                        z-index: -1;
                     }
                     .commentMy{
-                        margin-top: 10%;
-                        width: 90%;
+                        margin-top: 2vh;
+                        width: 60vw;
                         z-index: 0;
                         .emoji-display{
-                            height:40%;
-                            top: -40%;
+                            height:3vh;
+                            top: -3vh;
                         }
                         .inputMy{
-                            width: 45%;
+                            width: 30vw;
                         }
                         .buttonInput{
+                            width: 11.5vw;
                             margin-left: 0px;
                             z-index: 1;
                         }
                     }
                 }
             }
-            .player1,
-            .player2{
-                width: 30%;
-                height: 100%;
-                .avatarOpponent{
-                    height: 75%;
+        }
+    }
+}
+@media only screen and (max-width: 330px) {
+    .abody{
+        height: 100%;
+        width: 100%;
+        .againstBody{
+            width: 100%;
+            height: 100%;
+            padding-top: 0px;
+            .roomName{
+                width: 30vw;
+                margin-left: 35vw;
+            }
+            .Top{
+                width: 100vw;
+                height: 25vh;
+                margin-top: 1vh;
+                .button-score{
+                    height: 15vh;
+                    float: none;
+                    width: 80vw;
+                    margin-left: 10vw;
+                    .buttonGroup{
+                        width: 72vw;
+                        margin-left: 4vw;
+                        .start,.back{
+                            width: 22vw;
+                        }
+                        .mode-wrap{
+                            width: 20.5vw;
+                        }
+                        .back{
+                            margin-left: 2px;
+                        }
+                    }
+                    .score-wrap{
+                        width: 90%;
+                        height: 7.5vh;
+                        margin-left: 5%;
+                        .timer-wrap{
+                            width: 21.5vw;
+                            height: 7.5vh;
+                        }
+                        .my-score{
+                            width: 18vw;
+                        }
+                        .your-score{
+                            width: 18vw;
+                        }
+                        .limit-clock{
+                            width: 18vw;
+                        }
+                        .your-score{
+                            margin-left: 23.25vw;
+                        }
+                        .timer-wrap{
+                            margin-left: 46.5vw;
+                        }
+                    }
                 }
-                .avatarMy{
-                    height: 75%;
+                .playerTop{
+                    width: 85vw;
+                    height: 12vh;
+                    margin-left: 7.5vw;
+                    margin-bottom: 3.5vh;
+                    .player1{
+                        margin-top: 1vh;
+                        width: 21vw;
+                        height: 21vw;
+                        .picture{
+                            height: 80%;
+                        }
+                        .avatarOpponent{
+                            height: 75%;
+                        }    
+                    }
+                    .messageOpponent{
+                        height: 21vw;
+                        width: 64vw;
+                        margin-top: 1vh;
+                        .commentOpp{
+                            width: 57vw;
+                            margin-top: 2.5vh;
+                        }
+                    }
                 }
-                .picture{
-                    height: 80%;
+            }
+            .game-wrap{
+                height: 45vh;
+            }
+            .playerDown{
+                width:85vw;
+                height: 12vh;
+                margin-top: 3vh;
+                margin-left: 7.5vw;
+                .player2{
+                    width: 21vw;
+                    height: 21vw;
+                    .picture{
+                        height: 80%;
+                    }
+                    .avatarMy{
+                        height: 75%;
+                    }
+                }
+                .messageMy{
+                    width: 64vw;
+                    height: 100%;
+                    .commentMy:before{
+                        z-index: -1;
+                    }
+                    .commentMy{
+                        margin-top: 2vh;
+                        width: 60vw;
+                        z-index: 0;
+                        .emoji-display{
+                            height:3vh;
+                            top: -3vh;
+                        }
+                        .inputMy{
+                            width: 30vw;
+                        }
+                        .buttonInput{
+                            width: 11.5vw;
+                            margin-left: 0px;
+                            z-index: 1;
+                        }
+                    }
                 }
             }
         }
     }
 }
-@media only screen and (max-width: 320px) {
-    .Top{
-        margin-top: 2%;
-        .buttonGroup,
-        .score-wrap{
-            margin-left: 1%;
-        }
-        .playerTop{
-            height: 135%;
-        }
-    }
-    .playerDown{
-        height: 13.5%
-    }
-    .emoji-display{
-        height: 40%;
-        top: -40%;
-    }
-    .inputMy{
-        margin-left: 2%;
-    }
-    .buttonInput{
-        margin-left: 1.5%;
-    }
-}
-
 </style>
