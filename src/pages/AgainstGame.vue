@@ -292,7 +292,7 @@ export default {
         this.myName = this.$store.state.nickName   
         this.roomId = this.$store.state.roomId
         //全局监听enter事件
-        document.onkeydown = (e) => {
+        document.onkeydown = e =>{
             let key = window.event.keyCode;
             if (key == 13) {
                 this.sendMsg();
@@ -432,6 +432,7 @@ export default {
                 float: right;
                 height: 100px;
                 .buttonGroup{
+                    position: relative;
                     width: 250px;
                     height: 33px;
                     font-weight: 700;
@@ -440,14 +441,14 @@ export default {
                     }
                     .start{
                         @extend %default-button;
-                        width: 80px;
+                        width: 32%;
                         height: 27px;
                         line-height: 21px;
                         font-size: 1rem;
                         display: inline;
                         border-radius: 5px;
                         border: 3px solid #E9CF7F;
-                        margin-left: 5px;
+                        margin-left: 34%;
                     }
                     .start.isdisabled {
                         cursor: not-allowed;
@@ -455,21 +456,22 @@ export default {
                     } 
                     .back {
                         @extend %default-button;
-                        width: 80px;
+                        width: 32%;
                         height: 27px;
                         line-height: 21px;
                         font-size: 1rem;
                         display: inline;
                         border-radius: 5px;
                         border: 3px solid #E9CF7F;
-                        margin-left: 1px;
                     }
                     .mode-wrap:hover{
                         height: 90px;
                     }
                     .mode-wrap {
+                        position: absolute;
+                        top: 0px;
                         overflow: hidden;
-                        width: 74px;
+                        width: 30%;
                         height: 21px;
                         line-height: 21px;
                         cursor: pointer; 
@@ -481,8 +483,6 @@ export default {
                         border-radius: 5px;
                         border: 3px solid #E9CF7F;
                         z-index: 999;
-                        display: inline;
-                        float: left;
                         div {
                             box-sizing: border-box;
                             height: 20px;
