@@ -12,11 +12,13 @@
         <transition name="slide-fade">
             <div class="pop-up" v-show="dialog" key="fade">
                 <div class="pop-wrap">
-                    <input class="menu-input" v-model="nickName" placeholder="请输入个人昵称">
-                    <input class="menu-input" v-model="roomId" placeholder="请输入房间名">
-                    <div class="menu-btn-wrap">
-                        <button class="menu-btn" :class="{'clickable': clickable}" @click="enterRoom">确定</button>
-                        <button class="menu-btn" @click="dialogClose">关闭</button>
+                    <div class="pop-inner-wrap">
+                        <input class="menu-input" v-model="nickName" placeholder="请输入个人昵称">
+                        <input class="menu-input" v-model="roomId" placeholder="请输入房间名">
+                        <div class="menu-btn-wrap">
+                            <button class="menu-btn" :class="{'clickable': clickable}" @click="enterRoom">确定</button>
+                            <button class="menu-btn" @click="dialogClose">关闭</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -112,7 +114,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$content-width: 40vw;
+$wrap-width: 60%;
+$content-width: 60%;
 %position-center {
     position: absolute;
     left: 50%;
@@ -133,7 +136,7 @@ $content-width: 40vw;
     height: 100%;
 
     .index-wrap {
-        width: 60%;
+        width: $wrap-width;
         height: 80%;
         position: relative;
         @extend %position-center;
@@ -184,7 +187,7 @@ $content-width: 40vw;
 
     .pop-wrap {
         @extend %position-center;
-        width: $content-width;
+        width: $wrap-width;
     }
 
     .show-about-wrap {
@@ -200,30 +203,34 @@ $content-width: 40vw;
 
 .pop-wrap {
 
-    .menu-input {
-        width: 100%;
-        height: 45px;
-        font-size: 1rem;
-        border-radius: 10px;
-        margin: 1rem 0;
-        border: 0.4rem solid #E9CF7F;
-        box-sizing: border-box;
-        color: #d7920e;
-        padding: 0 1rem;
-    }
-    .menu-btn-wrap {
-        display: flex;
-        justify-content: space-between;
-
-        .menu-btn {
-            padding: 0 10px;
-            padding: 0.5rem;
-            font-size: 1.3rem;
-            background-color: #8C7B69;
-            color: #F9F6F3;
+    .pop-inner-wrap {
+        width: $content-width;
+        margin: auto;
+        .menu-input {
+            width: 100%;
+            height: 45px;
+            font-size: 1rem;
             border-radius: 10px;
-            border-width: 0;
-            width: 45%;
+            margin: 1rem 0;
+            border: 0.4rem solid #E9CF7F;
+            box-sizing: border-box;
+            color: #d7920e;
+            padding: 0 1rem;
+        }
+        .menu-btn-wrap {
+            display: flex;
+            justify-content: space-between;
+
+            .menu-btn {
+                padding: 0 10px;
+                padding: 0.5rem;
+                font-size: 1.3rem;
+                background-color: #8C7B69;
+                color: #F9F6F3;
+                border-radius: 10px;
+                border-width: 0;
+                width: 45%;
+            }
         }
     }
 }
